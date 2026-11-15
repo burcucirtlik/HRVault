@@ -1,0 +1,21 @@
+{
+  "max_age_days": 14,
+  "seen_süresi_gün": 90,
+  "feeds": {
+    "remotive": {
+      "enabled": true
+    },
+    "remoteok": {
+      "enabled": true
+    },
+    "weworkremotely": {
+      "enabled": true,
+      "categories": []
+    },
+    "himalayas": {
+      "enabled": true,
+      "pages": 2
+    }
+  },
+  "watchlist": []
+}

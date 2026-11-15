@@ -1,0 +1,3 @@
+#!/bin/sh
+# HRVault: commit öncesi kişisel veri taraması. Kurulum: python3 engine/pipeline/export.py install-hook
+exec python3 "$(git rev-parse --show-toplevel)/engine/pipeline/export.py" lint --hook

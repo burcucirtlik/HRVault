@@ -1,0 +1,9 @@
+# Kişisel katman — asla versiyonlanmaz / paylaşılmaz
+/me/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

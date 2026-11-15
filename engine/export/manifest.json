@@ -1,0 +1,45 @@
+{
+  "kopyala": [
+    "engine/**/*.py",
+    "engine/**/*.md",
+    "engine/templates/**",
+    "engine/VERSION",
+    "engine/export/manifest.json",
+    "engine/export/countries.json",
+    "engine/export/pre-commit",
+    "knowledge/**/*.md",
+    ".claude/skills/*/SKILL.md",
+    ".claude/settings.json",
+    "DESIGN.md",
+    "CLAUDE.md",
+    "README.md",
+    ".gitignore"
+  ],
+  "asla": [
+    "me/**",
+    ".git/**",
+    "docs/**",
+    "**/.DS_Store",
+    "**/__pycache__/**",
+    "**/*.pyc",
+    "**/*.pdf",
+    "**/*.zip",
+    ".claude/settings.local.json",
+    "engine/export/allow.json",
+    "knowledge/.baseline.json",
+    "EXPORT.json"
+  ],
+  "me_şablonu": "engine/templates/me",
+  "genel_kelimeler": [
+    "hrvault",
+    "kariyer"
+  ],
+  "platform_adları": [
+    "jobgether",
+    "dover",
+    "workable",
+    "smartrecruiters",
+    "personio"
+  ],
+  "bölgesel_adaptörler": false
+}
