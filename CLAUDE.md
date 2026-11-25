@@ -14,9 +14,12 @@ Bu vault'u kuranların çoğu teknik değildir: komut yazdırma, dosya açtırma
 Kişinin bildiği komutlar altı tanedir: `/başla` (kurulum, kaldığı yerden devam) → `/tara` (tara + puanla + listeyi göster)
 → `/başvur` (CV hazırla + onayla başvur) · `/durum` · `/panel` · `/yardım`.
 
-- **Depo bu oturumda klonlandıysa** komutlar menüde henüz görünmeyebilir. Klonlama bitince kişiye yalnızca şunu söyle:
-  "Hazır. Şimdi `/başla` yaz." Kişi `/başla` ya da düz yazıyla "başla" derse ve komut tanınmadıysa
-  `.claude/skills/basla/SKILL.md` dosyasını oku ve uygula; kişiyi yeni oturum açmaya zorlama.
+- **Depo bu oturumda klonlandıysa** komutlar menüde henüz görünmeyebilir ve bu dosya bağlamda olmayabilir. README'deki
+  ilk mesaj klonlamadan sonra bu dosyayı ve `.claude/skills/basla/SKILL.md`'yi okutup kurulumu başlatır; kişiye komut
+  yazdırma. Klasör boş değilse (ör. gizli `.DS_Store`) `git clone … .` reddedilir: dosyalara dokunmadan
+  `git init` + `git remote add origin <url>` + `git fetch` + `git checkout -t origin/main` ile aynı sonuca ulaş.
+  Kişi düz yazıyla "başla" / "kurulumu başlat" derse ve komut tanınmadıysa `.claude/skills/basla/SKILL.md`'yi oku ve
+  uygula; kişiyi yeni oturum açmaya zorlama.
   Aynısı diğer komutlar için de geçerli: `.claude/skills/<tara|basvur|durum|panel|yardim>/SKILL.md`.
 - Depo çalışma klasörünün **alt klasörüne** klonlandıysa komutlar ve oturum başı kontrolü yüklenmez: kişiye o alt
   klasörü proje klasörü olarak açmasını söyle.

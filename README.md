@@ -14,7 +14,7 @@ applications. It runs inside the Claude app. Claude does the setup; you just ans
 
 ## Türkçe kılavuz
 
-### Dört adımda başla
+### Üç adımda başla
 
 **Gereken tek şey:** ücretli bir Claude üyeliği (Pro, Max, Team ya da Enterprise) ve
 [Claude masaüstü uygulaması](https://claude.ai/download). Başka bir şey kurman gerekirse Claude sana söyler.
@@ -26,20 +26,18 @@ Masaüstünde yeni bir klasör oluştur, adını `HRVault` koy.
 Claude uygulamasını aç → sol üstte **Code** → mesaj kutusunun altındaki klasör düğmesi → **Open folder…** → az önce
 açtığın klasörü seç. (Yanındaki ilk düğmede **Local** seçili olsun; "bu bilgisayarda" demektir.)
 
-**3. Claude'a depoyu klonlat.**
-Bu sayfanın adresini tarayıcının adres çubuğundan kopyala. Sonra Claude'a şunu yaz ve sonuna adresi yapıştır:
+**3. Claude'a tek bir mesaj gönder.**
+Bu sayfanın adresini tarayıcının adres çubuğundan kopyala. Sonra aşağıdaki mesajı Claude'a yapıştır ve sonuna
+adresi ekle:
 
 ```text
-Bu depoyu doğrudan bu klasöre klonla (alt klasör açma), bitince CLAUDE.md dosyasını oku:
+Bu depoyu doğrudan bu klasöre klonla (alt klasör açma). Sonra CLAUDE.md ve .claude/skills/basla/SKILL.md dosyalarını okuyup kuruluma başla. Depo:
 ```
 
-Claude izin isterse onayla. Bittiğinde "Hazır" der.
+Claude izin isterse onayla. Gerisini o yapar: HRVault'u indirir, bilgisayarını kontrol eder ve sana soruları
+**tek tek** sormaya başlar. Bitince **`/tara` yaz** der. Yazarsın, ilanların gelir.
 
-**4. `/başla` yaz.**
-Claude sana soruları **tek tek** sorar: kim olduğunu, ne aradığını, nerede çalışabileceğini. Sen cevaplarsın, gerisini o yapar.
-Bitince sana **`/tara` yaz** der. Yazarsın, ilanların gelir.
-
-> `/` yazınca açılan listede `başla` görünmüyorsa eğik çizgisiz **başla** yaz; aynı şey olur.
+**Sonraki günler:** Claude uygulamasında aynı klasörü aç. Yarıda bıraktıysan `/başla`, ilanlara bakmak için `/tara` yaz.
 
 ---
 
@@ -70,15 +68,22 @@ Klavyende Türkçe harf yoksa düz harfle yaz: `/basla`, `/basvur`, `/yardim`.
 
 ### İlk gün ne olur?
 
-`/başla` altı kısa adımdan oluşur. Tamamı yaklaşık bir saat sürer; tek oturumda bitirmek zorunda değilsin.
-Ara verirsen sonra yine `/başla` yazarsın.
+Kurulum kısa bir turdur; ilk ilan listeni aynı oturumda görürsün. Ara verirsen sonra `/başla` yazarsın.
 
-1. **Tanışma** — LinkedIn linkini ya da CV dosyanı verirsin; ikisi de yoksa anlatırsın.
-2. **Kanıt** — Yaptığın işlerden birkaç somut örnek.
-3. **Analiz** — Claude güçlü yanlarını ve açıklarını özetler.
-4. **İş tanımları** — Sana uygun 3–6 iş türü önerir. **Sen onaylamadan hiçbir şey aranmaz.**
-5. **Aramalar** — Onayladığın her iş türü için bir arama kurulur.
-6. **Son ayarlar** — Hangi dilde ilanlara bakılacak, CV hangi dilde olacak.
+1. **Seni tanıyalım** — LinkedIn linkini ya da CV dosyanı verirsin; ikisi de yoksa anlatırsın. Claude okur ve özetler.
+2. **Ne arıyorsun?** — Hayalindeki iş, nasıl çalışmak istediğin, nerede yaşadığın ve nerede çalışma iznin olduğu.
+3. **Sana uygun işler** — Claude 3–4 iş türü önerir. **Sen onaylamadan hiçbir şey aranmaz.**
+4. **Diller** — Hangi dilde ilanlara bakılacak, CV hangi dilde olacak.
+5. **Takip edilecek şirketler** — Çalışmak istediğin şirketlerin adlarını yazarsın; yeni ilanları takip edilir. İstemezsen geçersin.
+
+Taramanın gerektirmediği sorular sonraya kalır: başvuru formlarında sorulanlar (başlama tarihi, ücret beklentisi…)
+ilk başvurunda, kırmızı çizgilerin ve önceliklerin ilk listeden sonra sorulur.
+
+### Neyi iyi bulur?
+
+HRVault en çok ilanı **uzaktan (remote) işlerde** ve **takip etmek istediğin şirketlerde** bulur. Kendi şehrinde
+ofis işi arıyorsan liste kısa olabilir. İki çözüm var: kurulumda çalışmak istediğin şirketleri ekle, ya da başka bir
+sitede beğendiğin ilanın linkini Claude'a yapıştır; ona da bakar, puanlar ve CV hazırlar.
 
 ---
 
@@ -120,8 +125,8 @@ Claude bir şey yapmadan önce bazen izin ister; ekranda ne yapmak istediğini g
 | Ne oldu | Ne yap |
 |---|---|
 | **Code** bölümü açılmıyor ya da "Upgrade" diyor | Hesabın ücretsiz. HRVault ücretli bir Claude planı gerektirir. |
-| `/başla` listede yok | Eğik çizgisiz **başla** yaz. Yine olmazsa uygulamada yeni bir sohbet aç (aynı klasörde) ve tekrar dene. |
-| Claude "git bulunamadı" diyor | Claude'a "git'i nasıl kurarım?" diye sor; adım adım anlatır. İstemezsen bu sayfada yeşil **Code → Download ZIP** ile indir, içindekileri klasörüne taşı, sonra `/başla` yaz. |
+| `/başla` listede yok ya da "Unknown command" diyor | Uygulamada aynı klasörde yeni bir sohbet aç ve tekrar yaz. Ya da düz bir mesaj olarak "kurulumu başlat" yaz. |
+| Claude "git bulunamadı" diyor | Claude'a "git'i nasıl kurarım?" diye sor; adım adım anlatır. İstemezsen bu sayfada yeşil **Code → Download ZIP** ile indir, içindekileri klasörüne taşı, sonra "kurulumu başlat" yaz. |
 | Claude "Python bulunamadı" diyor | `/başla` sana nasıl kuracağını söyler. Windows'ta kurarken **Add python.exe to PATH** kutusunu işaretle, sonra uygulamayı kapatıp aç. |
 | CV PDF'i oluşmuyor | Google Chrome'u kur, sonra "PDF'i yeniden oluştur" de. |
 | Çok az ilan çıkıyor | "Neden az ilan çıktı?" diye sor. Hangi kuralın kaç ilan elediğini söyler; gevşetmek istersen söylemen yeter. |
@@ -140,7 +145,7 @@ Claude'a **"HRVault'u güncelle"** de. Yeni sürümü indirir; `me` klasörüne 
 
 ## English guide
 
-### Start in four steps
+### Start in three steps
 
 **All you need:** a paid Claude plan (Pro, Max, Team or Enterprise) and the
 [Claude desktop app](https://claude.ai/download). If anything else is needed, Claude will tell you.
@@ -152,22 +157,20 @@ Make a new folder on your Desktop and call it `HRVault`.
 Open the Claude app → **Code** at the top left → the folder button under the message box → **Open folder…** → pick
 the folder you just made. (The first button next to it should say **Local**, which means "on this computer".)
 
-**3. Ask Claude to clone the repository.**
-Copy this page's address from your browser's address bar. Then send Claude this message with the address pasted
-at the end:
+**3. Send Claude one message.**
+Copy this page's address from your browser's address bar. Then paste the message below to Claude and add the
+address at the end:
 
 ```text
-Clone this repository directly into this folder (no subfolder), then read CLAUDE.md:
+Clone this repository directly into this folder (no subfolder). Then read CLAUDE.md and .claude/skills/basla/SKILL.md and start the setup. Repository:
 ```
 
-Approve when Claude asks for permission. It says "Ready" when it's done.
+Approve when Claude asks for permission. It does the rest: downloads HRVault, checks your computer and starts
+asking you questions **one at a time**. When it's finished it tells you to **type `/tara`**. You do, and your job list arrives.
 
-**4. Type `/basla`.**
-Claude asks you questions **one at a time**: who you are, what you're looking for, where you can work. You answer,
-it does the rest. When it's finished it tells you to **type `/tara`**. You do, and your job list arrives.
+**On later days:** open the same folder in the Claude app. Type `/basla` to pick up where you left off, `/tara` to look at jobs.
 
 > HRVault's own files are written in Turkish, but Claude talks to you in the language you write in.
-> If `basla` isn't in the list that opens when you type `/`, just type **start** as a normal message.
 
 ---
 
@@ -197,15 +200,22 @@ work on any keyboard.
 
 ### What happens on day one?
 
-`/basla` has six short steps. The whole thing takes about an hour; you don't have to finish in one sitting.
-If you take a break, type `/basla` again later.
+Setup is a short tour; you see your first job list in the same sitting. If you take a break, type `/basla` later.
 
-1. **Introduction** — You give your LinkedIn link or your CV file; if you have neither, you just tell your story.
-2. **Evidence** — A few concrete examples from the work you've done.
-3. **Analysis** — Claude sums up your strengths and gaps.
-4. **Job definitions** — It proposes 3–6 kinds of jobs that fit you. **Nothing is searched until you approve.**
-5. **Searches** — One search is set up for each job definition you approved.
-6. **Final settings** — Which languages to search postings in, and which language your CV should be in.
+1. **Getting to know you** — You give your LinkedIn link or your CV file; if you have neither, you tell your story. Claude reads it and sums it up.
+2. **What you're looking for** — Your dream job, how you want to work, where you live and where you're allowed to work.
+3. **Jobs that fit you** — Claude proposes 3–4 kinds of jobs. **Nothing is searched until you approve.**
+4. **Languages** — Which languages to search postings in, and which language your CV should be in.
+5. **Companies to follow** — You name companies you'd like to work for; their new postings are followed. You can skip this.
+
+Questions the search doesn't need come later: what application forms ask (start date, salary expectation…) at your
+first application, your red lines and priorities after your first list.
+
+### What is it good at?
+
+HRVault finds the most postings for **remote jobs** and at **companies you choose to follow**. If you're looking for
+an office job in your own city, the list may be short. Two fixes: add the companies you'd like to work for during
+setup, or paste a link to a posting you liked on any other site; Claude looks at it, scores it and writes a CV.
 
 ---
 
@@ -247,8 +257,8 @@ Claude sometimes asks before doing something; a box shows what it wants to do.
 | What happened | What to do |
 |---|---|
 | The **Code** section won't open or says "Upgrade" | Your account is on the free plan. HRVault needs a paid Claude plan. |
-| `/basla` isn't in the list | Type **start** as a normal message. If that doesn't work either, open a new chat in the app (same folder) and try again. |
-| Claude says "git not found" | Ask Claude "how do I install git?"; it walks you through it. Or use the green **Code → Download ZIP** button on this page, move the contents into your folder, then type `/basla`. |
+| `/basla` isn't in the list or says "Unknown command" | Open a new chat in the app (same folder) and type it again. Or send "start the setup" as a normal message. |
+| Claude says "git not found" | Ask Claude "how do I install git?"; it walks you through it. Or use the green **Code → Download ZIP** button on this page, move the contents into your folder, then send "start the setup". |
 | Claude says "Python not found" | `/basla` tells you how to install it. On Windows tick **Add python.exe to PATH** in the installer, then close and reopen the app. |
 | The CV PDF isn't created | Install Google Chrome, then say "create the PDF again". |
 | Very few jobs show up | Ask "Why so few jobs?". It tells you which rule dropped how many postings; say so if you want one relaxed. |

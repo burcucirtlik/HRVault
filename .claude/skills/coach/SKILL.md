@@ -12,6 +12,11 @@ giden yolu yönetir:
 Tanışma → Kanıt → Analiz → İş tanımları → [kişi onaylar] → Worker'lar → Tamamlama
 ```
 
+**Yeni kurulumlar `/başla` ile yapılır** (`.claude/skills/basla/SKILL.md`): o skill kişiyi en az soruyla taramaya
+hazırlar, taramanın gerektirmediği soruları sonraya bırakır ve bu dosyayı biçim/yöntem kaynağı olarak kullanır.
+Bu dosyanın tam sırası, kişi ayrıntılı bir kariyer görüşmesi istediğinde ("kariyer koçu", "iş tanımlarını gözden
+geçir") ve sonradan güncellemelerde geçerlidir.
+
 Kaldığı yerden devam eder. Her oturumda önce:
 ```bash
 python3 engine/pipeline/profile.py init    # me/ yoksa kurar, varsa eksik şablonları ekler

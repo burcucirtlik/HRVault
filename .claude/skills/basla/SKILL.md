@@ -1,15 +1,18 @@
 ---
 name: başla
-description: HRVault'un tek giriş komutu — ortamı kontrol eder, kişisel klasörü kurar ve kariyer koçunu soruları tek tek sorarak yürütür; yarıda kalan kurulumu kaldığı yerden sürdürür. Kişi "/başla", "başla", "basla", "kurulumu başlat", "devam edelim", "start", "get started" dediğinde, depo yeni klonlandığında, me/ boşken ya da kişi ne yapacağını bilmediğinde kullan.
+description: HRVault'un giriş komutu — ortamı kontrol eder, kişisel klasörü kurar ve kişiyi kısa bir turla ilk ilan listesine ulaştırır (soruları tek tek sorar); yarıda kalan kurulumu ve ertelenen soruları kaldığı yerden sürdürür. Kişi "/başla", "başla", "basla", "kurulumu başlat", "devam edelim", "start", "get started" dediğinde, depo yeni klonlandığında, me/ boşken ya da kişi ne yapacağını bilmediğinde kullan.
 ---
 <!-- durum: çalışır -->
-# başla — kurulum ve tanışma, tek komut
+# başla — hızlı tur: ilk ilan listesine kadar
 
 Bu komutu yazan kişi teknik olmayabilir. Onun gördüğü tek şey sohbettir: dosya açtırma, komut yazdırma,
 terim öğretme. Gereken her şeyi sen yaparsın; ona yalnızca **soru sorar** ve **onay istersin**.
 
-Akışın kendisi `coach` skill'idir (`.claude/skills/coach/SKILL.md`); bu dosya ona nasıl girileceğini ve
-yeni başlayan biriyle nasıl yürütüleceğini söyler. Çelişki olursa içerikte coach, **üslupta bu dosya** geçerlidir.
+**Hedef:** kişiyi olabildiğince az soruyla taramaya hazır hale getirmek. Taramanın gerektirmediği sorular
+**sonraya** bırakılır (bkz. "Ertelenenler"). Dosya biçimleri ve yöntem için `coach` skill'i
+(`.claude/skills/coach/SKILL.md`) kaynaktır; **sıra, soru sayısı ve üslup** için bu dosya geçerlidir.
+
+Depo bu oturumda klonlandıysa `CLAUDE.md` bağlamda olmayabilir: başlamadan önce oku.
 
 ## 0 — Doğru klasörde miyiz?
 Çalışma klasöründe `engine/` ve `CLAUDE.md` olmalı. Bunlar bir alt klasördeyse (depo alt klasöre klonlanmış):
@@ -30,49 +33,99 @@ python3 engine/pipeline/profile.py check
   kontrolü `python3` adını bekler; çalışmazsa her oturumda `/başla` yazması yeterlidir.
 - `doctor` çıktısını **yapıştırma**. Her `✗` ve `!` satırını bir cümleye çevir: ne eksik, neyi etkiler, ne zaman
   gerekir ("PDF için Chrome ya da Edge gerekiyor; başvuru adımına kadar kurman yeterli"). `✗` varsa önce onu çöz.
-- `check` sonucu **HAZIR + aşama tamam** ise kurulum bitmiştir → §4.
+- `check` **HAZIR** diyorsa tur bitmiştir → "Zaten kurulu vault".
 
 ## 2 — Karşılama (yalnızca ilk kez; me/ yeni kurulduysa)
-Dört satırı geçme:
+Beş satırı geçme:
 1. Gizlilik sözü: anlattığı ve okunan her şey yalnızca kendi bilgisayarındaki `me/` klasöründe kalır.
-2. Ne olacak: altı kısa adımda onu tanıyacaksın, ona uygun iş tanımları önereceksin; **onayı olmadan** tarama da
-   başvuru da yapılmaz.
-3. Ne kadar sürer: tek oturumda bitmek zorunda değil; istediği an bırakır, sonra yine `/başla` yazar.
-4. İlk soru.
+2. Ne olacak: kısa bir tanışma, sonra ona uygun iş türleri önerilecek; **onayı olmadan** tarama da başvuru da yok.
+3. Süre: ilk ilan listesine bu oturumda ulaşılır; kalan sorular sonra, gerektikleri anda sorulur.
+4. Dürüst kapsam: "Şu an en çok ilanı **uzaktan (remote) işlerde** ve **takip etmek istediğin şirketlerde** bulurum.
+   Kendi şehrinde ofis işi arıyorsan ilk liste kısa olabilir; beğendiğin bir ilanın linkini yapıştırırsan ona da bakarım."
+5. İlk soru (Adım 1).
 
-## 3 — Koçu yürüt (yeni başlayan kuralları)
-`coach` skill'ini oku ve `check`'in gösterdiği aşamadan devam et. Şu kurallarla:
+## 3 — Tur (her mesajda tek soru)
+Her mesajın başında yerini göster: `Adım 2/5 · Ne arıyorsun?`. Adımlar:
+1 Seni tanıyalım · 2 Ne arıyorsun? · 3 Sana uygun işler · 4 Diller · 5 Takip edilecek şirketler.
 
-- **Her mesajda tek soru.** Seçenekli olabilen her soruyu AskUserQuestion ile sor; açık uçlu soruya bir örnek
-  cevap ekle ("örneğin: …"). coach'taki "bir mesajda ~5 soru" sınırı burada **1**'dir.
-- **Her mesajın başında nerede olduğunu göster:** `Adım 2/6 · Kanıt`. Adımlar: 1 Tanışma · 2 Kanıt · 3 Analiz ·
-  4 İş tanımları · 5 Aramalar · 6 Son ayarlar.
+Genel kurallar:
+- **Tek soru.** Seçenekli olabilen her soru AskUserQuestion ile; açık uçlu soruya bir örnek cevap ekle.
 - **Terim yok.** worker → "arama", evidence-bank → "kanıt listesi", ATS → "başvuru sistemlerinin CV taraması",
   inbox → "günlük liste". Dosya adlarını ancak kişi sorarsa söyle.
-- **İlk bilgi kaynağını kişi seçer** (AskUserQuestion, tek soru):
-  - *LinkedIn profilim var* (önerilen) → linki iste; tarayıcıda kişinin kendi oturumuyla oku
-    (`engine/adapters/linkedin.md` → "Profil okuma"). Giriş gerekiyorsa kişi kendisi girer; şifre girme.
-  - *CV dosyam var* → dosyayı sohbete sürüklemesini ya da vault klasörüne koymasını iste; oku.
-  - *İkisi de yok* → deneyimlerini sondan başa doğru, her seferinde tek iş için sor.
-  Tarayıcı kullanılamıyorsa takılma: LinkedIn'in "PDF olarak kaydet" çıktısını ya da CV'yi iste.
-- **Bilinen şeyi yeniden sorma.** Bir soruyu sormadan önce `me/profile/` içinde cevabı var mı bak; varsa
-  "şunu anladım, doğru mu?" diye teyit al.
-- **Her adımın sonunda:** iki satırlık "senden öğrendiklerim" özeti → dosyalara yaz → paneli yenile
-  (`python3 engine/pipeline/dashboard.py`; ilk seferde `--open`) → "devam edelim mi, ara mı verelim?".
-- İş tanımları (Adım 4) kişinin **açık onayı** olmadan onaylanmış sayılmaz; "tamam", "olur" yeterli, sessizlik değil.
-- Kişi bir soruyu geçmek isterse geç, `me/learnings.md → bekleyen konular`a yaz, kurulumu bu yüzden durdurma;
-  ancak `check`'in zorunlu saydığı bir alan ise neden gerektiğini bir cümleyle söyle.
+- **Bilinen şeyi yeniden sorma.** Sormadan önce `me/profile/` içinde cevabı var mı bak; varsa teyit al.
+- **Uydurma yok.** Yalnızca kişinin verdiği kaynakta ya da söylediğinde dayanağı olanı yaz.
+- Her adımın sonunda: dosyalara yaz → paneli yenile (`python3 engine/pipeline/dashboard.py`; ilk seferde `--open`).
+- Kişi ara vermek isterse: "Kaldığımız yer: Adım N. Devam etmek için `/başla` yaz."
+
+### Adım 1 · Seni tanıyalım
+AskUserQuestion: **"Seni nereden tanıyayım?"** → *LinkedIn profilim* (önerilen) · *CV dosyam* · *İkisi de yok, anlatırım*.
+- LinkedIn → linki iste; tarayıcıda kişinin kendi oturumuyla oku (`engine/adapters/linkedin.md` → "Profil okuma").
+  Giriş gerekiyorsa kişi kendisi girer; şifre girme. Tarayıcı kullanılamıyorsa LinkedIn'in "PDF olarak kaydet"
+  çıktısını ya da CV'yi iste.
+- CV → sohbete sürüklemesini ya da vault klasörüne koymasını iste; oku.
+- Anlatım → deneyimlerini sondan başa doğru, her seferinde tek iş için sor (unvan, şirket, yıllar, 2–3 somut iş).
+
+Yaz (biçimler coach §1a ve §2):
+- `cv-master.md` — deneyimler, özet, eğitim, diller. LinkedIn'den geldiyse ayrıca `linkedin-notes.md`.
+- `evidence-bank.md` — deneyim maddelerinden **en az 5 yetkinlik**, her biri kaynaktaki bir cümleye bağlı
+  (`_kaynak: LinkedIn_` / `_kaynak: CV_` / `_kaynak: kişi anlattı_`). Kanıtı olmayan yetkinliği yazma.
+- `answers.md` → kaynakta açıkça yazanlar (ad, e-posta, LinkedIn linki). Gerisini sorma; ertelenir.
+
+Sonra 5 maddelik "senden öğrendiklerim" özeti ve tek soru: "Yanlış ya da eksik bir şey var mı?"
+
+### Adım 2 · Ne arıyorsun?
+Üç soru, ayrı mesajlarda:
+1. **Hayalindeki iş ve sektör** (açık uçlu; örnek: "fintech'te ürün analisti").
+2. **Nasıl çalışmak istiyorsun?** AskUserQuestion, çoklu seçim: *Tam zamanlı* · *Freelance / proje* · *Part-time*;
+   ardından ikinci kart: *Remote* · *Hibrit* · *Ofis*.
+3. **Nerede yaşıyorsun ve hangi ülkelerde çalışma iznin var?** (örnek: "İzmir'de yaşıyorum; Türkiye'de iznim var,
+   AB'de yok"). Taşınmaya açıklığını da bu cevapta yakala; ayrıca sorma.
+Son olarak, CV'de güncel bir işveren varsa tek kart: **"Şu an çalıştığın şirketin ilanlarını gizleyeyim mi?"** → kara liste.
+
+→ `goals.md`: *Hayalimdeki iş ve sektör*, *Nasıl çalışmak istiyorum*, *Konum ve çalışma izni* (kişinin kelimeleriyle).
+→ `answers.md`: `location`, `work_authorization`. → `preferences.md`: kara liste.
+
+### Adım 3 · Sana uygun işler
+- `career-analysis.md` → yalnızca **Profil özeti** ve **Önerilen iş tanımları** (coach §3). Diğer bölümler
+  ertelenen sorular cevaplanınca tamamlanır.
+- `job-definitions.md` → **3–4 tanım** (coach §4 biçimi; ülkeler çalışma izniyle tutarlı). Her birini kısa bir
+  kartla göster (ad · bir cümle · neden sen · açıklar) ve AskUserQuestion ile tek tek sor: *Onayla* · *Değiştir* · *İstemiyorum*.
+  Açık onay olmadan tanım onaylanmış sayılmaz.
+- Onaylanan her tanım için aramayı kur (coach §5) — kişiye sormadan, sonunda tek cümleyle söyle
+  ("3 arama kuruldu: …").
+
+### Adım 4 · Diller
+AskUserQuestion, çoklu seçim: **"Hangi dillerde yazılmış ilanlara bakalım?"** (CV'deki dillerden öner; arayüz Türkçe
+diye Türkçeyi varsayma). Ardından **"CV'ni hangi dillerde hazırlayabilirim?"**
+→ `preferences.md → worker_varsayılanları.ilan_dilleri`, `cv_dili`.
+Kişinin ülkesine uyan bölgesel kaynak varsa (`engine/adapters/*.md` → `kapsam:`) tek kartla aç/kapalı sor (coach §6).
+
+### Adım 5 · Takip edilecek şirketler
+Soru: **"Çalışmak istediğin şirketler var mı? 5–10 isim yazabilirsin; aklında yoksa geçebiliriz."**
+Her şirket için:
+1. Resmi kariyer sayfasını bul (şirketin kendi sitesi). Bulamıyorsan ya da emin değilsen kişiye linki sor; tahmin etme.
+2. `python3 engine/scanner/scan.py detect "<kariyer-sayfası>" --add "<Şirket>"`
+3. Sonucu topla. Sonda tek mesaj: eklenenler (açık ilan sayısıyla) ve eklenemeyenler — "bu şirketlerin ilan
+   sistemi henüz desteklenmiyor; ilanlarının linkini bana yapıştırırsan tek tek değerlendiririm."
+Kişi geçerse sorun değil; tarama yine çalışır.
 
 ## 4 — Bitiş
-`python3 engine/pipeline/profile.py check` → **HAZIR** olunca:
+`python3 engine/pipeline/profile.py check` → **HAZIR** değilse eksik olanı (yalnızca hazır olmayı engelleyeni)
+bir soruyla tamamla. HAZIR olunca:
 - Paneli aç: `python3 engine/pipeline/dashboard.py --open`.
-- Üç satırlık özet: kaç iş tanımı onaylandı, hangi aramalar açık, hangi dillerde ilan aranacak.
-- Son cümle, aynen: **"Kurulum tamam. İlanları görmek için `/tara` yaz."**
+- Üç satırlık özet: onaylanan iş türleri, kurulan aramalar, takip edilen şirketler.
+- Son cümle, aynen: **"Hazırız. İlanları görmek için `/tara` yaz."**
   Taramayı kendiliğinden başlatma; kişi yazsın (komutu öğrenmesi için).
 
-Zaten hazır bir vault'ta `/başla` yazıldıysa hiçbir şeyi yeniden sorma: durumu bir cümleyle söyle ve
-`yardim` skill'indeki komut tablosunu göster.
+## Ertelenenler (turda sorulmaz)
+| Ne | Ne zaman sorulur |
+|---|---|
+| Form cevapları (telefon, başlama tarihi, saat dilimi, para birimi, vize sponsorluğu, ücret, ihbar süresi / haftalık saat) | İlk `/başvur`'da, başvurudan önce (başvur skill'i) |
+| Güçlü yanlar, çekinceler, öncelikler, artık istemediklerin, kırmızı çizgiler | İlk `/tara`'dan sonra (tara skill'i) ya da kişi `/başla`'yı yeniden yazınca |
+| Kariyer analizinin kalan bölümleri | Güçlü yanlar ve çekinceler cevaplanınca |
 
-## Kişi yarıda bırakırsa
-Bir şey kaybolmaz; yazılanlar `me/` içindedir. Kapanışta tek cümle: "Kaldığımız yer: Adım N. Devam etmek için
-`/başla` yaz."
+## Zaten kurulu vault
+`/başla` hazır bir vault'ta yazıldıysa hiçbir şeyi yeniden sorma. Durumu bir cümleyle söyle.
+`check` eksik listesinde ertelenen bir şey varsa: "Listeni iyileştirecek birkaç kısa soru kaldı; şimdi sorayım mı?"
+Evet derse yukarıdaki tablodaki soruları tek tek sor (form cevapları hariç; onlar başvuruda). Hayır derse
+`yardim` skill'indeki komut tablosunu göster.

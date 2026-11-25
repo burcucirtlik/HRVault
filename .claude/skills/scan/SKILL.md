@@ -85,11 +85,13 @@ python3 engine/scanner/scan.py detect "<kariyer-sayfası-veya-ilan-url>" --add "
 - ATS bulunamazsa (Workable, SmartRecruiters…) kişiye adaptörün henüz olmadığını söyle.
 
 ## 5. LinkedIn ve elle verilen linkler
-LinkedIn otomatik taranmaz (`engine/adapters/linkedin.md`).
-- Kişi bir LinkedIn ilan linki veya iş alarmı e-postası verirse: ilanı oku; başvuru şirket sitesine
-  gidiyorsa `detect` ile ATS'yi bul (bulunursa şirketi takip listesine eklemeyi öner).
-- İlanı bugünün tarama dosyasına elle ekle (aynı şema, `source: "linkedin"`) ve §2 ile sınıflandır.
-- Sonra kaydet: `scan.py kaydet linkedin --yontem "kişinin linki" --ilan 1` (oturumlu aramada `--yontem "oturumlu arama"`).
+LinkedIn otomatik taranmaz (`engine/adapters/linkedin.md`). Taranmayan bir sitedeki ilan da aynı yolla girer:
+kişi beğendiği ilanın linkini sohbete yapıştırır.
+- Kişi bir ilan linki (LinkedIn ya da başka bir site) veya iş alarmı e-postası verirse: ilanı oku; başvuru şirket
+  sitesine gidiyorsa `detect` ile ATS'yi bul (bulunursa şirketi takip listesine eklemeyi öner).
+- İlanı bugünün tarama dosyasına elle ekle (aynı şema, `source`: sitenin kısa adı, ör. `"linkedin"`) ve §2 ile sınıflandır.
+- Sonra kaydet: `scan.py kaydet <site> --yontem "kişinin linki" --ilan 1` (oturumlu aramada `--yontem "oturumlu arama"`).
+- Ardından score skill'iyle puanla ve sonucu kişiye sohbette göster (puan, neden uygun, eksikler).
 
 ## Kurallar
 - Kaynaklara günde bir tarama yeterli; aynı gün tekrar `run` yalnızca yeni ilanları ekler.

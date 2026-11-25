@@ -23,7 +23,18 @@ Kişi tek komut yazar; `scan` ve `score` skill'lerinin işini sırayla sen yapar
    Cevabı `score` skill'indeki karar adımıyla listeye işle. En az bir ilan onaylandıysa son cümle:
    **"Başvuruları hazırlamak için `/başvur` yaz."**
 
+7. **Ertelenen sorular** (kurulum hızlı turla yapıldıysa). `python3 engine/pipeline/profile.py check --json` →
+   `eksikler` içinde `goals: boş` varsa, karar adımı bittikten sonra **bir kez** sor:
+   "Listeni daha isabetli yapmak için 3–4 kısa soru sorayım mı?" Evet derse boş başlıkları **tek tek** sor
+   (önce *Kırmızı çizgiler* ve *Artık yapmak istemediklerim* — eleme için en etkili olanlar; sonra *Öncelikler*,
+   *Güçlü gördüğüm taraflar*, *Çekincelerim*). Cevapları `goals.md`'ye kişinin kelimeleriyle yaz; kaçınılan
+   şirket/sektör çıkarsa kara listeye ekle. Güçlü yanlar ve çekinceler gelince `career-analysis.md`'nin kalan
+   bölümlerini tamamla (coach §3) ve iş tanımlarını etkileyen bir şey varsa söyle. Hayır derse o gün yeniden sorma.
+
 ## Liste boş ya da çok kısaysa
 Geçiştirme. Taramanın eleme sayaçlarına bak ve **en çok ilan düşüren iki sebebi** sayılarıyla söyle
 (dil, konum, ilan yaşı, başlık eşleşmesi…). Bir tane somut ayar öner; ayarı kişinin onayı olmadan değiştirme.
 Sebep bir kaynağın cevap vermemesiyse bunu söyle, kriterleri suçlama.
+Kişi ofis ya da hibrit iş arıyorsa ve kaynakların çoğu remote ilan veriyorsa bunu dürüstçe söyle; iki yol öner:
+takip edilecek şirket eklemek (kariyer sayfası linkiyle) ya da beğendiği ilanların linkini sohbete yapıştırmak
+(scan skill'i → "bu linke bak").

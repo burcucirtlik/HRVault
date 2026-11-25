@@ -144,7 +144,9 @@ def definitions(path: Path) -> list[dict]:
     return out
 
 
-GOALS_CORE = ["Hayalimdeki iş ve sektör", "Nasıl çalışmak istiyorum"]
+# Taramanın açılması için dolu olması gereken hedef başlıkları. Konum ve izin, aramaların hangi ülkelerde
+# yapılacağını belirler; boş kalırsa kişinin çalışamayacağı yerlerin ilanları gelir. Diğer başlıklar sonra sorulabilir.
+GOALS_CORE = ["Hayalimdeki iş ve sektör", "Nasıl çalışmak istiyorum", "Konum ve çalışma izni"]
 
 
 def check(vault: Path | None = None) -> dict:

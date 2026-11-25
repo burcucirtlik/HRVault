@@ -597,3 +597,35 @@ class HimalayasFetch(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SetupStage(unittest.TestCase):
+    """Taramanın açılması için konum ve çalışma izni de dolu olmalı (hızlı turda baştan sorulur)."""
+
+    def _vault(self, tmp: str, konum: str) -> Path:
+        import shutil
+        root = Path(__file__).resolve().parents[2]
+        v = Path(tmp)
+        shutil.copytree(root / "engine" / "templates" / "me", v / "me")
+        (v / "engine").mkdir()
+        (v / "engine" / "VERSION").write_text("0.0.0", encoding="utf-8")
+        cv = v / "me" / "profile" / "cv-master.md"
+        cv.write_text(cv.read_text(encoding="utf-8").replace("- Ad Soyad:", "- Ad Soyad: Örnek Kişi")
+                      .replace("### Rol — Şirket (AAAA-AA – AAAA-AA)", "### Backend Engineer — Örnek (2020-01 – 2024-01)"),
+                      encoding="utf-8")
+        g = v / "me" / "profile" / "goals.md"
+        t = g.read_text(encoding="utf-8")
+        t = t.replace("## Hayalimdeki iş ve sektör\n", "## Hayalimdeki iş ve sektör\nYazılım ekiplerinde backend işi.\n")
+        t = t.replace("## Nasıl çalışmak istiyorum\n", "## Nasıl çalışmak istiyorum\nTam zamanlı, remote.\n")
+        if konum:
+            t = t.replace("## Konum ve çalışma izni\n", f"## Konum ve çalışma izni\n{konum}\n")
+        g.write_text(t, encoding="utf-8")
+        return v
+
+    def test_location_required_for_first_stage(self):
+        for konum, want_first in (("", True), ("Lyon, France; AB'de çalışma iznim var.", False)):
+            with tempfile.TemporaryDirectory() as tmp:
+                from pipeline import profile
+                r = profile.check(self._vault(tmp, konum))
+            self.assertEqual(r["aşama"] == "1 · Tanışma", want_first, konum)
+            self.assertFalse(r["hazır"])
