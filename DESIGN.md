@@ -73,6 +73,7 @@ scan → score → [günlük onay] → tailor → apply → track
      kaynaklarından ilanları çeker, rol anahtar kelimesiyle başlıktan ön eler, kaynağın açıkça
      beyan ettiği uyumsuz yeri (ör. onsite) eler, başlıkta ya da ATS konum alanında worker'ın
      `ülkeler`iyle kesişmeyen bölge kısıtını ve worker'ın konuşmadığı dilde dil uzmanlığı ilanlarını eler,
+     kara listedeki şirketleri ve `ilan_dilleri` dışında yazılmış ilanları (dil metinden tespit edilir) düşürür,
      tekrarları birleştirir, son `seen_süresi_gün` (varsayılan 90) içinde görülenleri atlar
      → `me/pipeline/scans/YYYY-MM-DD.json`.
    - *Skill*: ilan metnini okuyup çalışma tipini, yeri ve saati **kendisi çıkarır** (etikete
@@ -107,7 +108,9 @@ scan → score → [günlük onay] → tailor → apply → track
    Durumlar: `hazırlandı → başvuruldu → görüldü → mülakat → teklif | ret | sessiz`, ayrıca `iptal`
    (gönderilmeden vazgeçildi; `iptal_sebebi` zorunlu). `engine/pipeline/track.py`: tablo, vadesi gelen
    takipler, worker ve puan bandına göre dönüşüm.
-7. **learn** — Her adımdan sonra öğrenilenleri ayırır (bkz. §4).
+7. **learn** — Her adımdan sonra öğrenilenleri ayırır (bkz. §5). `engine/pipeline/learn.py rapor` tarama, karar ve
+   başvuru kayıtlarından huniyi (rol kelimesi / kaynak / worker), tekrar eden eleme sebeplerini ve bekleyen
+   öğrenimleri çıkarır; öneriler kişinin onayıyla worker'a ya da iş tanımına işlenir.
 
 ---
 
@@ -118,6 +121,8 @@ kayıtlı bir arama profilidir (`tanım: T<n>`; bağsız worker taranmaz):
 çalışma tipi, yer, roller, ücret, saat, kaynaklar, CV vurgusu.
 
 - `me/workers/*.md`, her birinde `durum: aktif | duraklatıldı`.
+- `kısmi_remote` (isteğe bağlı): worker yalnızca remote isterken belirli tiplerde, en düşük remote oranında ve belirli şehirlerde
+  hibrit ilanları kabul eden istisna.
 - Tüm worker'larda aynı olan alanlar (yer, ülkeler, kaynaklar, günlük limit, saat) `preferences.md →
   worker_varsayılanları`'nda durur; worker yalnızca farkı yazar. `ortak_hariç_başlık` her worker'ın
   hariç listesine eklenir.
@@ -223,6 +228,10 @@ madde kimliklerini taşır; kişi, makine ya da yol bilgisi taşımaz. `verify` 
   için kullanılır; başvurunun son adımını kişi yapar. Hesap riski alınmaz.
 - **Şifre ve CAPTCHA:** motor şifre girmez, CAPTCHA geçmez. Girişi kişi yapar.
 - **Gönderim onayı:** hiçbir form kişinin onayı olmadan gönderilmez.
+- **ATS eşiği:** ATS puanı %90'ın altındaki CV ile başvuru yapılmaz (`ats.py --gate`); eşik ayarla
+  değişmez, kişi onayıyla da aşılmaz. Puan yalnızca kanıtı olan kelimelerle yükseltilir. Terim listesi CV'den önce
+  `ats-terimler.json`'a kilitlenir, her terim ilanda geçer, liste gerekçesiz daraltılamaz; kapı kayıtlı listeyle
+  yeniden ölçer ve `track.py … başvuruldu` kapıdan geçmeden çalışmaz.
 - **Doğruluk:** CV ve ön yazıda uydurma yetkinlik, rakam veya deneyim yok.
 - **Bilinmeyen soru:** form cevap bankasında olmayan soruda tahmin yapılmaz, sorulur.
 - **Günlük limit:** worker başına günlük başvuru üst sınırı (`me/profile/preferences.md`).
@@ -246,4 +255,5 @@ madde kimliklerini taşır; kişi, makine ya da yol bilgisi taşımaz. `verify` 
 - [x] `export` — beyaz liste, sızıntı taraması, paket ve doğrulama, bilgi paketi ve birleştirme (`export.py`)
 - [x] Yeni kurulum: oturum kapısı, `profile.py doctor`, nötr varsayılanlar, ilan dili sorusu
 - [ ] E-postadan durum güncelleme (track)
+- [x] Panel — `engine/pipeline/dashboard.py` → `me/dashboard.html`: son tarama, elenenler, başvurular (ATS + eksik kelimeler), retler, kaynaklar ve kriterler
 - [ ] Zamanlama (günlük tarama) ve bildirim kanalı

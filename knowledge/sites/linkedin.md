@@ -32,3 +32,8 @@
   Sayfa localStorage'ı ve window.name'i sayfa geçişinde siliyor; ara sonuç tarayıcıda tutulamıyor. Araç çıktısı ~1.000 karakterde
   kesildiği için kart listesi parça parça okunmalı. Düşük hacim: arama başına tek sayfa, aramalar arası birkaç saniye.
   _dayanak: tek oturum, birkaç arama · güven: orta_
+- **Tek ilan girişsiz okunabiliyor** `k:linkedin-tek-ilan-girissiz-okunabiliyor`
+  Oturum yokken `linkedin.com/jobs/view/<id>` giriş sayfasına yönleniyor (bazen 429). Aynı ilanın metni
+  `linkedin.com/jobs-guest/jobs/api/jobPosting/<id>` adresinde girişsiz açılıyor: başlık, şirket, tam açıklama, kıdem ve istihdam türü.
+  Yalnızca kişinin verdiği tekil ilan linki için kullan; arama sayfalarını bu yolla gezme. Linkteki izleme parametrelerini at, yalnızca id'yi kullan.
+  _dayanak: tek ilan · güven: orta_

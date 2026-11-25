@@ -6,14 +6,19 @@ Kullanım (vault kökünden):
   python3 engine/pipeline/track.py due    [--today YYYY-MM-DD]   # takip tarihi gelenler
   python3 engine/pipeline/track.py stats                          # dönüşüm: worker ve puan bandına göre
   python3 engine/pipeline/track.py set <başvuru> <durum> [--not "…"] [--sebep "…"] [--takip-gün 10]
+                                       [--harici "kişi ne zaman / nasıl gönderdi"]
 
 Durumlar: hazırlandı → başvuruldu → görüldü → mülakat → teklif | ret | sessiz | iptal.
 `iptal` için --sebep zorunludur (learn kullanır). `başvuruldu` yapılınca başvuru ve takip tarihi yazılır.
+**`başvuruldu` ATS kapısından geçer** (`ats.py --gate`: kayıtlı listeyle yeniden ölçüm, %90, birincil şart, güncel PDF);
+geçmezse durum değişmez. `--harici` yalnızca kişinin vault dışında **kendisi** gönderdiği başvuruyu kayda geçirmek
+içindir: kapı atlanır ve bu, durum geçmişine yazılır. Vault'ta hazırlanan bir başvuruyu göndermek için kullanılmaz.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from collections import defaultdict
 from datetime import date, timedelta
@@ -22,7 +27,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
-from pipeline import records  # noqa: E402
+from pipeline import ats, records  # noqa: E402
 
 ACTIVE = {"başvuruldu", "görüldü"}
 RESPONDED = {"görüldü", "mülakat", "teklif", "ret"}
@@ -117,6 +122,21 @@ def cmd_stats(_a) -> int:
     for b in ("85+", "70–84", "60–69", "<60", "puansız"):
         if bands.get(b):
             print(line(b, bands[b]))
+    ats_b = defaultdict(list)
+    for f in apps:
+        m = re.match(r"\s*~?(\d+)\s*%", str(f.get("ats_eşleşme") or ""))
+        p = int(m.group(1)) if m else None
+        ats_b["ölçülmemiş" if p is None else "90+" if p >= 90 else "70–89" if p >= 70 else "<70"].append(f)
+    print("ATS bandına göre (kapının işe yarayıp yaramadığı):")
+    for b in ("90+", "70–89", "<70", "ölçülmemiş"):
+        if ats_b.get(b):
+            print(line(b, ats_b[b]))
+    by_src = defaultdict(list)
+    for f in apps:
+        by_src[str(f.get("kaynak") or "?")].append(f)
+    print("Kaynağa göre:")
+    for s, g in sorted(by_src.items(), key=lambda x: -len(x[1])):
+        print(line(s, g))
     no_reason = [f for f in cancelled if str(f.get("iptal_sebebi") or "belirtilmedi") == "belirtilmedi"]
     if no_reason:
         print(f"Not: {len(no_reason)} iptalin sebebi belirtilmemiş — learn için kişiye sor.")
@@ -133,6 +153,14 @@ def cmd_set(a) -> int:
     fields = {"durum": a.durum, "son_güncelleme": today.isoformat()}
     if a.durum == "başvuruldu":
         fm = records.read(d)
+        if a.harici:
+            a.not_ = f"ATS kapısı atlandı — harici gönderim (kişi): {a.harici}" + (f" · {a.not_}" if a.not_ else "")
+        elif str(fm.get("durum") or "") in ("", "hazırlandı"):
+            reasons, _ = ats.check(d)
+            if reasons:
+                sys.exit("ATS kapısı geçilmedi; durum değişmedi (sabit kural, kişi onayıyla da aşılmaz):\n  - "
+                         + "\n  - ".join(reasons)
+                         + f"\nAyrıntı ve öneriler: python3 engine/pipeline/ats.py {d.name} --gate")
         fields["başvuru_tarihi"] = fm.get("başvuru_tarihi") or today.isoformat()
         fields["takip_tarihi"] = (today + timedelta(days=a.takip_gün)).isoformat()
     if a.durum == "iptal":
@@ -160,6 +188,8 @@ def main() -> int:
     s.add_argument("--sebep")
     s.add_argument("--not", dest="not_")
     s.add_argument("--takip-gün", dest="takip_gün", type=int, default=10)
+    s.add_argument("--harici", metavar="AÇIKLAMA",
+                   help="kişinin vault dışında kendisi gönderdiği başvuru; ATS kapısı atlanır, geçmişe yazılır")
     a = ap.parse_args()
     return {"list": cmd_list, "due": cmd_due, "stats": cmd_stats, "set": cmd_set}[a.cmd](a)
 

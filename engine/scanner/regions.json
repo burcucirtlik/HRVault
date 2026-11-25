@@ -1,0 +1,49 @@
+{
+  "_not": "Bölge adı → üye ülkeler (katlanmış, küçük harf). İlanın konum alanı bir bölge adıyorsa ve worker'ın `ülkeler` listesindeki bir ülke o bölgenin üyesiyse ilan geçer (ör. konum 'DACH', izin listesinde Avusturya). Yalnızca yukarı doğru genişler: izin listesindeki bölge adı ülke adına dönüşmez. '@ad' başka bir bölgenin üyelerini ekler. Genel veri: kişisel bilgi yok.",
+  "bölgeler": {
+    "eu": {
+      "adlar": ["eu", "european union"],
+      "üyeler": ["austria", "belgium", "bulgaria", "croatia", "cyprus", "czechia", "czech republic", "denmark", "estonia",
+                 "finland", "france", "germany", "greece", "hungary", "ireland", "italy", "latvia", "lithuania",
+                 "luxembourg", "malta", "netherlands", "poland", "portugal", "romania", "slovakia", "slovenia", "spain",
+                 "sweden"]
+    },
+    "eea": {
+      "adlar": ["eea", "european economic area"],
+      "üyeler": ["@eu", "iceland", "liechtenstein", "norway"]
+    },
+    "europe": {
+      "adlar": ["europe", "european", "continental europe"],
+      "üyeler": ["@eea", "switzerland", "united kingdom", "uk", "great britain", "albania", "andorra",
+                 "bosnia and herzegovina", "kosovo", "moldova", "monaco", "montenegro", "north macedonia", "san marino",
+                 "serbia", "ukraine"]
+    },
+    "emea": {
+      "adlar": ["emea"],
+      "üyeler": ["@europe", "turkey", "turkiye", "israel", "united arab emirates", "uae", "saudi arabia", "qatar",
+                 "egypt", "morocco", "nigeria", "kenya", "south africa"]
+    },
+    "dach": {
+      "adlar": ["dach"],
+      "üyeler": ["germany", "austria", "switzerland"]
+    },
+    "benelux": {
+      "adlar": ["benelux"],
+      "üyeler": ["belgium", "netherlands", "luxembourg"]
+    },
+    "nordics": {
+      "adlar": ["nordics", "nordic", "nordic countries", "scandinavia"],
+      "üyeler": ["denmark", "finland", "iceland", "norway", "sweden"]
+    },
+    "western europe": {
+      "adlar": ["western europe"],
+      "üyeler": ["austria", "belgium", "france", "germany", "ireland", "luxembourg", "netherlands", "switzerland",
+                 "united kingdom", "uk", "portugal", "spain", "italy"]
+    },
+    "cee": {
+      "adlar": ["cee", "central and eastern europe", "eastern europe", "central europe"],
+      "üyeler": ["bulgaria", "croatia", "czechia", "czech republic", "estonia", "hungary", "latvia", "lithuania",
+                 "poland", "romania", "slovakia", "slovenia", "serbia", "ukraine", "moldova", "austria", "germany"]
+    }
+  }
+}

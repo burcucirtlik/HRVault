@@ -14,6 +14,11 @@
   "dosya": "knowledge/ats.md",
   "özet": "2f10ec2c7c11b23c"
  },
+ "ats-ilanin-birincil-sarti-cv-de-adiyla-gecmeli": {
+  "dayanak": "tek ret",
+  "dosya": "knowledge/ats.md",
+  "özet": "a03eff14b406335d"
+ },
  "ats-metin-tabanli-pdf": {
   "dayanak": "genel bilgi",
   "dosya": "knowledge/ats.md",
@@ -23,6 +28,11 @@
   "dayanak": "genel bilgi",
   "dosya": "knowledge/ats.md",
   "özet": "be2e54e8b816fd4d"
+ },
+ "ats-uygunluk-puani-ats-olcumunun-yerini-tutmaz": {
+  "dayanak": "tek ret",
+  "dosya": "knowledge/ats.md",
+  "özet": "62fda167cfb4e46f"
  },
  "classification-aday-konumu-baslik-degil-kaynagin-konum": {
   "dayanak": "tek hatalı öneri",
@@ -59,15 +69,30 @@
   "dosya": "knowledge/classification.md",
   "özet": "60a5e4bb7072f006"
  },
+ "classification-ilan-dili-ve-kara-liste-betikte-elenir": {
+  "dayanak": "tek örneklem",
+  "dosya": "knowledge/classification.md",
+  "özet": "90482b77f270b754"
+ },
  "classification-independent-contractor-freelance": {
   "dayanak": "ilk tarama",
   "dosya": "knowledge/classification.md",
   "özet": "5dd6737aed2b1674"
  },
+ "classification-kariyer-sayfasi-konumu-izinli-yer-yoksa-ele": {
+  "dayanak": "tek tarama, çok sayıda ilan",
+  "dosya": "knowledge/classification.md",
+  "özet": "2b8b369fba1137a5"
+ },
  "classification-remote-her-yerden": {
   "dayanak": "genel bilgi",
   "dosya": "knowledge/classification.md",
   "özet": "7da5ee11b3913fa7"
+ },
+ "classification-rol-kalibi-ne-cok-ozel-ne-cok-genel": {
+  "dayanak": "tek örneklem karşılaştırması",
+  "dosya": "knowledge/classification.md",
+  "özet": "cb8861ceeaa91ca2"
  },
  "classification-saat-sayisi-tipi-belirler": {
   "dayanak": "genel bilgi",
@@ -79,6 +104,16 @@
   "dosya": "knowledge/classification.md",
   "özet": "ef40f87521927908"
  },
+ "classification-yer-yazmayan-freelance-ilani-elenmez": {
+  "dayanak": "tek tarama",
+  "dosya": "knowledge/classification.md",
+  "özet": "70f05351a185766c"
+ },
+ "forms-ashby-otomatik-degerlendirme-rizasi-kisiye-birakilir": {
+  "dayanak": "tek başvuru",
+  "dosya": "knowledge/forms.md",
+  "özet": "841d34059dd37e4f"
+ },
  "forms-claude-in-chrome-form-doldururken-sekme": {
   "dayanak": "tek oturum",
   "dosya": "knowledge/forms.md",
@@ -88,6 +123,26 @@
   "dayanak": "tek form",
   "dosya": "knowledge/forms.md",
   "özet": "13823d9b902f20e8"
+ },
+ "forms-hazirliktan-once-onceki-basvuruyu-kontrol-et": {
+  "dayanak": "tek başvuru",
+  "dosya": "knowledge/forms.md",
+  "özet": "9b784786890d315a"
+ },
+ "forms-profil-degisince-kariyer-sitesi-profillerini": {
+  "dayanak": "tek başvuru",
+  "dosya": "knowledge/forms.md",
+  "özet": "03d02db160465bc1"
+ },
+ "forms-sirketin-kendi-kariyer-formunda-dosya-yuklemek": {
+  "dayanak": "tek başvuru",
+  "dosya": "knowledge/forms.md",
+  "özet": "daedb0d777475f6d"
+ },
+ "forms-tasinma-sorusu-kisinin-zaten-yasadigi-ulke": {
+  "dayanak": "tek başvuru (hızlı ret, sebep doğrulanmadı)",
+  "dosya": "knowledge/forms.md",
+  "özet": "72ec0de1baf893fa"
  },
  "forms-uzun-metin-cevaplari-icin-tus-vurusuyla": {
   "dayanak": "çok sayıda form",
@@ -114,6 +169,11 @@
   "dosya": "knowledge/sites/greenhouse.md",
   "özet": "85c5afef696b2c98"
  },
+ "himalayas-alaka-sirasi-baslik-eslesmelerini-ilk-sayfaya": {
+  "dayanak": "birkaç sorgu, tüm sayfalar",
+  "dosya": "knowledge/sites/himalayas.md",
+  "özet": "90580478d1b8bdee"
+ },
  "himalayas-apply-now-oturum-acmamis-kullaniciyi-kayit": {
   "dayanak": "tek başvuru denemesi",
   "dosya": "knowledge/sites/himalayas.md",
@@ -139,6 +199,11 @@
   "dosya": "knowledge/sites/himalayas.md",
   "özet": "1e34346b2dce2f8b"
  },
+ "himalayas-ulke-filtresi-olmadan-uygun-ilanlar-okunmuyor": {
+  "dayanak": "birkaç sorgu karşılaştırması",
+  "dosya": "knowledge/sites/himalayas.md",
+  "özet": "3e161ba210bba23f"
+ },
  "linkedin-detay-sayfalari-tembel-yukleniyor-sonuna-kadar": {
   "dayanak": "tek profil okuması",
   "dosya": "knowledge/sites/linkedin.md",
@@ -158,6 +223,11 @@
   "dayanak": "genel bilgi",
   "dosya": "knowledge/sites/linkedin.md",
   "özet": "de4708a39eba4f0f"
+ },
+ "linkedin-tek-ilan-girissiz-okunabiliyor": {
+  "dayanak": "tek ilan",
+  "dosya": "knowledge/sites/linkedin.md",
+  "özet": "fc64d2b2663a2d33"
  },
  "linkedin-uygulama-ici-tarayicida-linkedin-oturumu-yok": {
   "dayanak": "tek oturum",

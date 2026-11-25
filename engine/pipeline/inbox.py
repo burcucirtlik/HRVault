@@ -27,7 +27,8 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from scanner import config  # noqa: E402
-from scanner.scan import _fold, dedupe_key  # noqa: E402
+from scanner.common import company_blocked  # noqa: E402
+from scanner.scan import _fold, dedupe_key  # noqa: E402,F401
 
 VAULT = HERE.parent.parent
 PIPE = VAULT / "me" / "pipeline"
@@ -112,7 +113,7 @@ def cmd_filter(a) -> int:
         comp = _fold(j.get("company", ""))
         text = f"{j.get('title', '')}\n{j.get('description', '')}"
         reason = None
-        if any(b and (b == comp or b in comp) for b in bad_companies):
+        if company_blocked(j.get("company", ""), kl.get("şirketler") or []):
             reason = "kara liste: şirket"
         elif any(re.search(rf"\b{re.escape(w)}\b", text, re.I) for w in bad_words):
             reason = "kara liste: anahtar kelime"

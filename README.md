@@ -23,6 +23,8 @@ Kontrol: `python3 engine/pipeline/profile.py doctor`
 ## İlk 30 dakika
 
 1. Bu klasörü Claude Code'da aç ve `/coach` yaz. (Başka bir şey yazsan da Claude seni buraya yönlendirir.)
+   İlerlemeni panelde izle: `python3 engine/pipeline/dashboard.py --open`. Panel tarayıcında açılır; en üstteki kurulum
+   kartı hangi aşamada olduğunu ve sıradaki adımı gösterir, her adımla dolar.
 2. **Tanışma** — koç LinkedIn profil linkini ister ve profilini ayrıntılı okur (CV gerekmez). Sonra konuşursunuz:
    güçlü gördüğün yanlar, çekincelerin, hayalindeki iş ve sektör, nasıl çalışmak istediğin, nerede yaşadığın
    ve çalışma iznin.
@@ -34,6 +36,8 @@ Kontrol: `python3 engine/pipeline/profile.py doctor`
 
 ## Günlük kullanım
 
+- **Panel** (`me/dashboard.html`): son tarama, elenenler ve sebepleri, başvurular ve ATS uyumu (eksik kelimelerle),
+  retler, kaynakların en son ne zaman tarandığı ve tarama kriterleri. Yalnızca senin bilgisayarında durur, hiçbir yere gönderilmez.
 - Onay listesini aç, istediğin ilanları `[x]` ile işaretle.
 - "Onaylananlara başvur" de. Her başvuru için CV hazırlanır, gönderimden önce sana gösterilir.
 - İş tanımlarını gözden geçir: "tanımlarımı gözden geçirelim".

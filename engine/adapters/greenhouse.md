@@ -18,3 +18,5 @@
 
 ## Durma noktaları
 CAPTCHA, giriş gerekmesi, `answers.md`'de karşılığı olmayan soru, ilan özetiyle çelişen form bilgisi.
+- Tarih: `first_published` → yayın, `updated_at` → son güncelleme/yeniden yayım. Yaş filtresi ikisinden yenisine bakar
+  (`me/sources.json → max_age_kapsam: hepsi` ise kariyer sayfalarına da uygulanır).

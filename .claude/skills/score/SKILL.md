@@ -37,7 +37,7 @@ Sonra her ilan için `python3 engine/scanner/scan.py show <sıra>` ile metni oku
 | Zorunlu yetkinlikler | 45 | İlanın "requirements / must have" maddelerinden kaçının kanıt bankasında **dayanağı** var. Dayanaksız iddia sayılmaz. |
 | Tercih edilen yetkinlikler | 15 | "nice to have / preferred" maddeleri, aynı kural. |
 | Kıdem ve deneyim yılı | 15 | İstenen yıl/seviye ile CV'deki ilgili deneyim. 2+ yıl açık ya da çok kıdemli rol → düşük. |
-| Worker uyumu | 15 | Ücret, saat, zaman dilimi, dil — worker ve `answers.md` ile. Belirsiz alan → yarı puan. |
+| Worker uyumu | 15 | Ücret, saat, zaman dilimi, dil — worker ve `answers.md` ile. Belirsiz alan → yarı puan. `kısmi_remote` istisnasıyla gelen hibrit ilan kuralı karşıladığı için uyumlu sayılır; yerinde gün sayısını uyarıya yaz. |
 | Kişisel tercih | 10 | `goals.md` (ne yapmak istiyor, güçlü alanlar, istemedikleri, öncelikler) ve `me/learnings.md`'deki kalıplar (sevdiği/reddettiği alanlar, şirket tipi, ton). Veri yoksa 5. |
 
 **Kalibrasyon:** 85+ güçlü aday, neredeyse tüm zorunlu maddeler kanıtlı · 70–84 iyi, 1–2 açık var ·
@@ -62,6 +62,8 @@ python3 engine/pipeline/inbox.py render
 ```
 `me/pipeline/inbox/YYYY-MM-DD.md` oluşur (eşik: `min_uygunluk_puanı`, üst sınır:
 `onay_listesi_üst_sınır`). Tekrar çalıştırmak güvenlidir: kişinin işaretleri korunur.
+
+Sonra paneli yenile: `python3 engine/pipeline/dashboard.py` (`me/dashboard.html`; kişi tarayıcıda açar).
 
 Kişiye kısa özet ver: kaç ilan sunuldu, ilk 3'ü (puan · rol · şirket · tek cümle neden),
 en sık eleme sebepleri, varsa dikkat isteyen uyarılar. Listenin yolunu ver.

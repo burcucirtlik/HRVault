@@ -14,8 +14,9 @@
     },
     "himalayas": {
       "enabled": true,
-      "pages": 2
+      "pages": 5
     }
   },
-  "watchlist": []
+  "watchlist": [],
+  "max_age_kapsam": "akışlar"
 }

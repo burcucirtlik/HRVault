@@ -156,7 +156,8 @@ STOP = {"remote", "freelance", "senior", "junior", "university", "universitesi",
         "contract", "part", "full", "time", "lead", "manager", "engineer", "developer", "consultant", "proje",
         "project", "present", "bugun", "self", "employed", "serbest", "linkedin", "github", "google", "claude"}
 
-DATA_FILES = ("engine/export/manifest.json", "engine/export/countries.json")  # beyan edilmiş genel adlar
+DATA_FILES = ("engine/export/manifest.json", "engine/export/countries.json",  # beyan edilmiş genel adlar
+              "engine/scanner/regions.json")
 COUNTRY_ALIASES = [set(g) for g in json.loads((HERE.parent / "export" / "countries.json").read_text(encoding="utf-8"))]
 
 

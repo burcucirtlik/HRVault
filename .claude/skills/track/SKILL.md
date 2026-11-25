@@ -33,3 +33,5 @@ Betik frontmatter'ı ve "Durum geçmişi"ni günceller; elle düzenleme gerekmez
 
 ## TODO
 - E-posta entegrasyonu (bağlayıcı seçilince).
+
+Durum değişince paneli yenile: `python3 engine/pipeline/dashboard.py` (ret, ATS ve bekleyenler orada görünür).

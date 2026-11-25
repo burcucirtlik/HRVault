@@ -21,3 +21,13 @@
 ## Site / ATS bazlı istisnalar
 
 ## Öğrenimler
+- **Uygunluk puanı ATS ölçümünün yerini tutmaz** `k:ats-uygunluk-puani-ats-olcumunun-yerini-tutmaz`
+  Rolün kişiye uyması, CV'nin ilanda bunu gösterdiği anlamına gelmez: yüksek uygunluk puanlı bir başvuru, ölçülmeden
+  gönderilmiş ve sonradan ölçüldüğünde zorunlu kelimelerin yarısı CV'de çıkmamıştı. Her gönderimden önce
+  `ats.py --gate` çalışır; ölçüm yoksa ya da puan %90'ın altındaysa gönderim yapılmaz (sabit kural).
+  _dayanak: tek ret · güven: orta_
+- **İlanın birincil şartı CV'de adıyla geçmeli** `k:ats-ilanin-birincil-sarti-cv-de-adiyla-gecmeli`
+  İlanın ilk zorunlu şartı bir araç ya da teknoloji adıysa (ör. "practitioner-level <araç> fluency") ve kişide kanıtı
+  varsa, o ad CV'de aynen geçmeli; ATS de insan okuyucu da önce ona bakar. Kanıt bankasında yoksa CV'yi bitirmeden
+  kişiye sor. ats.py'ye `--required` listesinin ilk terimi olarak verilir.
+  _dayanak: tek ret · güven: orta_

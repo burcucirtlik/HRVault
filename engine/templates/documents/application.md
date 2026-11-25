@@ -9,7 +9,10 @@ ilan_linki:
 başvuru_linki:
 başvuru_yöntemi: otomatik | yarı-otomatik | manuel
 uygunluk_puanı:               # score'un verdiği puan (0–100)
-ats_eşleşme:                  # ats.py'nin ölçtüğü yüzde; ölçülmediyse boş
+ats_eşleşme:                  # ats.py'nin ölçtüğü yüzde (liste: ats-terimler.json); elle yazılmaz, kapı yeniden ölçer
+ats_eksik_zorunlu:            # ats.py --record yazar
+ats_eksik_tercih:             # ats.py --record yazar
+ats_ilk_zorunlu:              # var | eksik — ilanın birincil şartı CV'de geçiyor mu (ats.py --record)
 cv: cv.md                     # bu başvuru için hazırlanan CV, bu klasörde
 cv_pdf:                       # render_pdf.py çıktısı, bu klasörde
 ön_yazı:                      # cover-letter.md | yok

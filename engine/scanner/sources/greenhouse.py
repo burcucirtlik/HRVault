@@ -19,6 +19,7 @@ def fetch_board(company: str, token: str) -> list[Job]:
             workplace=norm_workplace(meta.get("Location Type") or meta.get("Workplace Type")),
             employment_type=str(meta.get("Employment Type") or meta.get("Employment type") or ""),
             published=to_iso(j.get("first_published") or j.get("updated_at")),
+            updated=to_iso(j.get("updated_at")),
             tags=[d["name"] for d in j.get("departments") or [] if d.get("name")],
             description=html_to_text(j.get("content"), escaped=True),
         ))

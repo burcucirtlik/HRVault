@@ -52,3 +52,28 @@
   Başlık hariç listesi önek olarak eşleşirse "intern" → "Internal", "International" ilanlarını da eler (uygun bir ilan bu
   yüzden kaçtı). scan.py artık hariç listesini tam kelime (+ çoğul) olarak eşliyor; dahil listesi önek eşleşmeye devam ediyor.
   _dayanak: tek kaçan ilan · güven: orta_
+- **Rol kalıbı ne çok özel ne çok genel olmalı** `k:classification-rol-kalibi-ne-cok-ozel-ne-cok-genel`
+  Başlık eşleşmesi kalıbın tüm kelimelerini sırasız arar. Üç kelimelik çok özel kalıplar ("<sıfat> <alan> <unvan>") gerçek başlıklarla
+  nadiren birebir tutar ve uygun ilanlar görünmez; iki kelimelik çekirdek ("<alan> <unvan>") aynı ilanların hepsini yakalar. Öte yandan
+  genel bir çift ("<teknoloji> specialist") kelimeleri ayrı yerlerde geçen ilgisiz başlıkları da getirir ("<konu> Specialist – <teknoloji> … Project");
+  bunlar hariç başlıkla kapatılır. Kalıpları değiştirmeden önce geniş bir örneklemde ölç: ne eklenir, ne düşer.
+  _dayanak: tek örneklem karşılaştırması · güven: orta_
+- **İlan dili ve kara liste betikte elenir** `k:classification-ilan-dili-ve-kara-liste-betikte-elenir`
+  scan.py, rolle eşleşen ilanın yazıldığı dili metinden çıkarır; worker'ın `ilan_dilleri` listesinde yoksa ilanı düşürür (özette `dil_dışı`),
+  kara listedeki şirketleri de eşleşmeden önce atar (`kara_liste`). Kısa özetlerde ve iki dilli ilanlarda tahmin etmez; onlar sınıflandırmaya gelir.
+  İlanın *istediği* dil (ör. İngilizce ilanda başka bir dilde akıcılık şartı) hâlâ metinden okunarak elenir.
+  _dayanak: tek örneklem · güven: orta_
+- **Kariyer sayfası konumu: izinli yer yoksa ele** `k:classification-kariyer-sayfasi-konumu-izinli-yer-yoksa-ele`
+  ATS konum alanı çoğunlukla ofis şehridir ve ülke adı yazmayabilir ("San Francisco, California", "Seattle; Remote"). Kısıtlayıcı
+  ülke listesi bu şehirleri yakalamaz. Güvenilir kural tersidir: konum worker'ın izinli yerlerinden birini (ya da onu kapsayan bölgeyi)
+  anıyorsa ya da yalnızca açık bir ifadeyse ("Remote", "Home based – Worldwide") geç; başka bir yer adı varsa ele. "Remote – <şehir>"
+  o şehre/ülkeye bağlı remote demektir. scan.py bu kuralı uygular.
+  _dayanak: tek tarama, çok sayıda ilan · güven: orta_
+- **Yer yazmayan freelance ilanı elenmez** `k:classification-yer-yazmayan-freelance-ilani-elenmez`
+  Proje bazlı freelance ilanlar çoğu zaman çalışma yerini yazmaz. Ofis ya da hibrit şartı yalnızca metinde açıkça varsa ele;
+  yoksa `yer: belirsiz` işaretle, sınıflandırmadan geçir ve uyarıya "yer belirtilmemiş, teyit et" yaz. Freelance platformlarındaki
+  "%<n> remote" ifadesi kısmi yerinde çalışma demektir: worker yalnızca remote istiyorsa hibrit say. Worker'da `kısmi_remote`
+  istisnası varsa (tip, en düşük remote oranı, şehir) üç koşul birden sağlanınca geçir. Kabaca: %80 remote ≈ haftada 1 gün,
+  %85 ≈ ayda 3 gün yerinde (tam zamanlı proje varsayımıyla).
+  _dayanak: tek tarama · güven: orta_
+

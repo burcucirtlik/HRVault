@@ -16,11 +16,22 @@ python3 engine/scanner/scan.py run
 ```
 - Aktif worker'ları (`me/workers/`, `durum: aktif`) ve `me/sources.json`'u okur.
 - Çıktı: `me/pipeline/scans/YYYY-MM-DD.json`. Daha önce görülen ilanlar (`me/pipeline/seen.json`) atlanır.
+- Yaş filtresi `me/sources.json → max_age_days`; yayın ya da yeniden yayım/güncellemeden yeni olanına bakar. `max_age_kapsam:
+  akışlar` (varsayılan) yalnızca akış sitelerine, `hepsi` kariyer sayfalarına da uygular. Özette `eski` sayacı elenenleri gösterir.
 - `me/sources.json` yoksa `engine/templates/me/sources.json`'dan kopyala.
 - Kaynak hata verirse tarama durmaz; özetteki `hata` satırını kişiye bildir.
+- `kara_liste` ve `dil_dışı` sayaçları betiğin kendiliğinden elediklerini gösterir (kara listedeki şirket; `ilan_dilleri`
+  dışında yazılmış ilan). Bunlar tarama dosyasına girmez; yalnızca sayı olarak görünür.
+- `uyarı` satırı kaynağın **kısmen** okunduğunu söyler (ör. Himalayas hız sınırı: okunmayan sorgular listelenir;
+  geçersiz ülke). Az ilanı "piyasada ilan yok" diye yorumlama; kişiye söyle ve biraz sonra yalnızca o kaynağı yeniden tara:
+  `scan.py run --kaynak himalayas` (görülenler atlanır, yeni ilanlar bugünün dosyasına eklenir).
 - Özetteki `not:` satırlarını ele al:
   - *"takip listesinde … şirket yok"* → kişiye hangi şirketleri takip etmek istediğini sor (§4).
-  - *linkedin* → §5.
+  - *linkedin* ya da *"taranmaz; yalnızca iş alarmı…"* → §5.
+  - *"tarayıcıyla okunur"* → notun gösterdiği adaptörü oku, kurallarına uyarak yalnızca kişi isterse arama sayfalarını oku;
+    sonuçları bugünün tarama dosyasına elle ekle ve §2 ile sınıflandır.
+    Her okumadan sonra, ilan çıkmasa bile kaydet: `scan.py kaydet <kaynak> --yontem tarayıcı --ilan <n> [--not "…"]`
+    (panel kaynağın en son ne zaman tarandığını buradan gösterir).
 
 ## 2. Sınıflandır
 ```bash
@@ -40,6 +51,11 @@ onları da `knowledge/` maddesi gibi uygula.
 **İlan dili:** `dil` alanına ilanın *istediği* dilleri yaz; ilanın *yazıldığı* dil worker'ın `ilan_dilleri`
 listesinde (yoksa `preferences.md → worker_varsayılanları.ilan_dilleri`) değilse ilanı ele
 (`--drop "ilan dili: de; aranan: en"`). Liste boşsa tarama yapma, coach'a yönlendir.
+
+**Kısmi remote istisnası:** worker `yer: [remote]` iken `kısmi_remote` tanımlıysa (ör. `tipler`, `min_remote_yüzde`, `şehirler`),
+hibrit bir ilanı ancak üç koşul birden sağlanıyorsa geçir: tip listede, metindeki remote oranı en az `min_remote_yüzde`, yerinde
+çalışılacak yer `şehirler`den biri. Geçen ilanda `yer: "hibrit (%<n> remote, <şehir>)"` yaz ve `belirsiz`e değil uyarıya yerinde gün
+tahminini ekle. Koşullardan biri eksikse hibrit sebebiyle ele; oran yazmıyorsa `belirsiz` işaretle.
 
 Sonra worker filtreleriyle karşılaştır (`çalışma_tipi`, `yer`, `ülkeler`, `diller`, `ilan_dilleri`, `kıdem`, `min_ücret`)
 ve her ilan için **tek** komut çalıştır:
@@ -73,6 +89,7 @@ LinkedIn otomatik taranmaz (`engine/adapters/linkedin.md`).
 - Kişi bir LinkedIn ilan linki veya iş alarmı e-postası verirse: ilanı oku; başvuru şirket sitesine
   gidiyorsa `detect` ile ATS'yi bul (bulunursa şirketi takip listesine eklemeyi öner).
 - İlanı bugünün tarama dosyasına elle ekle (aynı şema, `source: "linkedin"`) ve §2 ile sınıflandır.
+- Sonra kaydet: `scan.py kaydet linkedin --yontem "kişinin linki" --ilan 1` (oturumlu aramada `--yontem "oturumlu arama"`).
 
 ## Kurallar
 - Kaynaklara günde bir tarama yeterli; aynı gün tekrar `run` yalnızca yeni ilanları ekler.

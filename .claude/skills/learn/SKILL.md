@@ -47,14 +47,39 @@ Devralınan madde senin deneyiminle çelişiyorsa silme; altına yenisini yaz.
 Maddenin `kapsam`ı kişinin durumuna uymuyorsa (başka ülke) o maddeyi uygulama.
 
 ## Ne zaman
-apply her oturumun sonunda learn'i çalıştırır; ayrıca kişi "bunu öğren" dediğinde.
+apply her oturumun sonunda learn'i çalıştırır; ayrıca kişi "bunu öğren" dediğinde ve her tarama + puanlama
+döngüsünden sonra (en az haftada bir) rapor için.
+
+## Döngü: rapor → öneri → kişinin onayı → değişiklik
+```bash
+python3 engine/pipeline/learn.py rapor            # son 30 gün; --gün 0 = hepsi
+```
+Betik okur, hiçbir şey yazmaz; üç bölüm verir:
+- **Verim:** rol kelimesi / kaynak / worker başına huni (betik → kaldı → listede → onay → başvuru → cevap).
+  *Gürültü adayı* (çok ilan getiren, listeye hiç ilan sokmayan kelime) ve *hiç ilan getirmeyen rol*.
+- **Tekrar eden eleme sebepleri** (3+), her birinin hangi kelimeden geldiği ve öneri.
+- **Bekleyenler:** sebepsiz ret/iptal, öğrenime işlenmemiş sonuç (ret, mülakat, teklif), 30+ gündür cevapsız başvuru.
+
+Ne yapılır:
+1. Bekleyenler: sebepleri kişiye **tek soruda** sor ("geç" de kabul); sonuçları `me/learnings.md`'ye işle;
+   sessiz adaylarını kişiye söyleyip `track.py set <klasör> sessiz`.
+2. Gürültü, ölü rol, tekrar eden sebep: **öneri olarak** sun, en fazla 3 tane, her biri sayısıyla
+   ("'<rol>' 42 ilan getirdi, hiçbiri listeye girmedi; 20'si alan uzmanlığı"). Rol çıkarma / ekleme / hariç_başlık /
+   kara liste değişikliği kişi onaylarsa `mode` (worker) ya da `coach` (iş tanımı) ile yapılır; learn worker'a kendi yazmaz.
+   Onaylanan ya da reddedilen her öneri `me/learnings.md → Tanım değişiklikleri`'ne tarihle yazılır: aynı öneri
+   gerekçesiz tekrar sunulmaz.
+3. Rapor başında "az tarama" uyarısı varsa rol çıkarma önerme; yalnızca gözlem olarak söyle.
+4. Kalıp birden çok kişide geçerliyse (ör. bir başlık tipinin sistematik olarak başka bir iş türü çıkması) genel kuralı
+   `knowledge/classification.md`'ye yaz; sayımları ve kişinin rollerini değil.
+
+`track.py stats` başvuru sonrası tarafı verir: worker, uygunluk puanı bandı, ATS bandı ve kaynağa göre cevap oranı.
 
 ## Kaynaklar
 - Onay listesinde `ret:` sebepleri → `python3 engine/pipeline/inbox.py log` (her ilanın geçerli kararı;
   `decisions.jsonl` yalnızca eklenir, aynı ilanın son satırı geçerlidir) → genelde `me/learnings.md`.
 - İptal edilen başvurular: `application.md → iptal_sebebi`. `belirtilmedi` ise bir kez kişiye sor.
-- `python3 engine/pipeline/track.py stats` → hangi worker / puan bandı cevap alıyor (yeterli veri olunca).
-  Aynı sebep 3+ kez tekrar ederse worker filtresine ya da kara listeye eklemeyi kişiye öner.
+- `python3 engine/pipeline/track.py stats` → hangi worker / puan bandı / ATS bandı / kaynak cevap alıyor (yeterli veri olunca).
+  Aynı sebep 3+ kez tekrar ederse (`learn.py elemeler` sayar) worker filtresine ya da kara listeye eklemeyi kişiye öner.
   Bir iş tanımının ilanları sürekli elenir ya da reddedilirse coach'a "tanımları gözden geçir" öner.
 - apply'da form tuhaflıkları → `knowledge/sites/`, `knowledge/forms.md`.
 - track'ten mülakat/ret sonuçları → kişiye özel olanlar `me/`, birden çok kişide tekrar

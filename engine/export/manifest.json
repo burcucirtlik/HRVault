@@ -6,6 +6,7 @@
     "engine/VERSION",
     "engine/export/manifest.json",
     "engine/export/countries.json",
+    "engine/scanner/regions.json",
     "engine/export/pre-commit",
     "knowledge/**/*.md",
     ".claude/skills/*/SKILL.md",
@@ -32,14 +33,19 @@
   "me_şablonu": "engine/templates/me",
   "genel_kelimeler": [
     "hrvault",
-    "kariyer"
+    "kariyer",
+    "güncelleme",
+    "yayın",
+    "müşteri",
+    "seyahat"
   ],
   "platform_adları": [
     "jobgether",
     "dover",
     "workable",
     "smartrecruiters",
-    "personio"
+    "personio",
+    "gitlab"
   ],
   "bölgesel_adaptörler": false
 }

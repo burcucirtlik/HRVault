@@ -36,6 +36,10 @@ Bir şey öğrendiğinde sor: "Bu, vault'u kullanan herkes için doğru mu?"
 - Onay listesi: `python3 engine/pipeline/inbox.py filter | rate | render | mark | decisions | log` (ayrıntı: score skill'i).
 - Başvuru: `engine/pipeline/ats.py` (ATS ölçümü), `render_pdf.py` (CV/ön yazı PDF), `track.py list | due | stats | set`,
   `backup.py` (me/ yedeği). Ayrıntı: tailor, apply, track skill'leri.
+- Öğrenme raporu: `python3 engine/pipeline/learn.py rapor | verim | elemeler | bekleyen` (yalnızca okur; öneriler
+  kişinin onayıyla uygulanır — ayrıntı: learn skill'i).
+- Panel: `python3 engine/pipeline/dashboard.py [--open]` → `me/dashboard.html` (yerel, kişisel; yayımlanmaz). Tarama, puanlama
+  ya da başvuru durumu değişince yeniden üret.
 - **Her hazırlanan CV ve ön yazı (md + PDF) başvurunun klasöründe saklanır**; gönderilmiş başvurunun PDF'i yeniden üretilmez.
 - Paylaşım: `python3 engine/pipeline/export.py lint | allow | ids | build | verify | merge | install-hook` (ayrıntı: export skill'i).
 - Arayüz dili Türkçedir; **aranan ilanların dili ayrı bir ayardır** (`preferences.md → worker_varsayılanları.ilan_dilleri`,
@@ -47,6 +51,8 @@ Bir şey öğrendiğinde sor: "Bu, vault'u kullanan herkes için doğru mu?"
   Cevap yoksa tahmin etme, kişiye sor ve cevabı `answers.md`'ye ekle.
 - CV / ön yazıda yalnızca `me/profile/` içinde dayanağı olan bilgiyi kullan. Uydurma yok.
 - Hiçbir formu kişinin açık onayı olmadan gönderme. Şifre girme, CAPTCHA geçme.
+- **ATS puanı %90'ın altındaysa başvuru yok** (`ats.py <klasör> --gate`). Sabit kural: ayarla değişmez,
+  kişi onayıyla da aşılmaz. Puan yalnızca kanıta dayalı kelimelerle yükseltilir; öneriler kişiye sunulur.
 - LinkedIn'de otomatik başvuru yapma; her şeyi hazırla, son adımı kişi yapsın.
 
 ## Skill'ler

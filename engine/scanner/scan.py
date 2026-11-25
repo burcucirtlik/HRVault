@@ -2,11 +2,12 @@
 """HRVault tarayıcı.
 
 Kullanım (vault kökünden):
-  python3 engine/scanner/scan.py run [--dry-run] [--all] [--max-age 14]
+  python3 engine/scanner/scan.py run [--dry-run] [--all] [--max-age 14] [--kaynak himalayas]
   python3 engine/scanner/scan.py brief [--scan YYYY-MM-DD] [--all]
   python3 engine/scanner/scan.py show <id|sıra> [--scan YYYY-MM-DD] [--full]
   python3 engine/scanner/scan.py annotate <id|sıra> (--json '{...}' | --drop SEBEP) [--workers a,b]
   python3 engine/scanner/scan.py detect <kariyer-sayfası-veya-ilan-url> [--add "Şirket Adı"]
+  python3 engine/scanner/scan.py kaydet <kaynak> [--yontem tarayıcı] [--ilan 0] [--not "…"]
 
 `run` aktif worker'ların kaynaklarından ilanları çeker, rol anahtar kelimeleriyle
 başlıktan ön-eleme yapar, tekrarları birleştirir, daha önce görülenleri atlar ve
@@ -21,7 +22,6 @@ import argparse
 import json
 import re
 import sys
-import unicodedata
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -29,7 +29,9 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
 
 from scanner import config  # noqa: E402
-from scanner.common import age_days, http_get, http_json  # noqa: E402
+from scanner.common import (age_days, company_blocked, expand_places, fresh_age, http_get, http_json,  # noqa: E402,F401
+                            place_hit, posting_language, role_matches)
+from scanner.common import fold as _fold  # noqa: E402  (inbox.py da buradan alır)
 from scanner.sources import ALL, ATS, FEEDS  # noqa: E402
 
 VAULT = HERE.parent.parent
@@ -37,26 +39,10 @@ NON_SCANNABLE = {"linkedin": "LinkedIn otomatik taranmaz; iş alarmı e-postalar
 
 
 # ------------------------------------------------------------------ yardımcılar
-def _fold(s: str) -> str:
-    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode()
-    return re.sub(r"[^a-z0-9]+", " ", s.lower()).strip()
-
-
 def dedupe_key(company: str, title: str) -> str:
     c = re.sub(r"\b(inc|llc|ltd|gmbh|corp|co|the)\b", "", _fold(company)).strip()
     t = re.sub(r"\s*\b(remote|hybrid|m f d|f m d|w m d)\b", "", _fold(title)).strip()
     return f"{c}|{t}"
-
-
-def role_matches(title: str, role: str) -> bool:
-    """Rolün tüm kelimeleri başlıkta kelime başı olarak geçiyor mu (çoğul ekine izin verir)."""
-    t = _fold(title)
-    words = _fold(role).split()
-    # Kısa kelimeler (ai, ml, qa…) önek olarak eşleşirse gürültü yapar: "ai" → "aircraft". Bunlar tam kelime (+ çoğul) eşleşir.
-    def hit(w: str) -> bool:
-        pat = rf"\b{re.escape(w)}s?\b" if len(w) <= 3 else rf"\b{re.escape(w)}"
-        return bool(re.search(pat, t))
-    return bool(words) and all(hit(w) for w in words)
 
 
 def excluded(title: str, phrase: str) -> bool:
@@ -79,6 +65,15 @@ def workplace_ok(declared: str, allowed: list) -> bool:
     return declared in {YER.get(str(x).lower(), str(x).lower()) for x in allowed}
 
 
+def partial_remote_ok(job, rule: dict | None) -> bool:
+    """`kısmi_remote` istisnası (worker yalnızca remote isterken): kaynak "hybrid" beyan ettiyse ve konum istisnanın
+    şehirlerinden birini anıyorsa ilanı geçir. Tip (ör. freelance) ve remote oranı ilan metninden scan skill'inde kontrol edilir."""
+    if not rule or job.workplace != "hybrid":
+        return False
+    loc = _fold(job.location)
+    return any(c and re.search(rf"\b{re.escape(c)}\b", loc) for c in (_fold(str(x)) for x in rule.get("şehirler") or []))
+
+
 OPEN_LOC = ("worldwide", "anywhere", "global", "remote")
 
 
@@ -86,6 +81,7 @@ def location_ok(job, allowed: list) -> bool:
     """Akış kaynaklarında konum alanı *adayın* bulunması gereken yeri belirtir (Himalayas
     locationRestrictions, Remotive candidate_required_location, WWR region…). Worker'ın
     `ülkeler` listesiyle hiç kesişmiyorsa ele. Başlıktaki "Worldwide" bu alanı geçersiz kılmaz.
+    İzinli ülkeyi kapsayan bölge adları da geçer ("DACH", "European Union"; bkz. regions.json).
     ATS kaynaklarında konum ofis yeridir; orada karar scan skill'inde."""
     if job.source not in FEEDS or not allowed:
         return True
@@ -93,7 +89,7 @@ def location_ok(job, allowed: list) -> bool:
     if not loc or any(re.search(rf"\b{w}\b", loc) for w in OPEN_LOC):
         return True
     # kelime sınırıyla: "EU" kısaltması "Sint Eustatius" içinde eşleşmesin
-    return any(_fold(str(a)) and re.search(rf"\b{re.escape(_fold(str(a)))}\b", loc) for a in allowed)
+    return place_hit(loc, expand_places(allowed))
 
 
 # Adayın bulunması gereken yeri kısıtlayan bölge/ülke adları (katlanmış). Worker'ın `ülkeler` listesiyle
@@ -119,21 +115,35 @@ def region_ok(text: str, allowed: list) -> bool:
     "Mentor (US, Canada, Europe)" → True (Europe izinli)."""
     if not allowed:
         return True
-    t = _fold(text)
+    # Küçük harfli "us" zamirdir ("Join us", "Build with Us"); ülke kısaltması büyük yazılır ("US", "U.S.").
+    t = _fold(re.sub(r"\b(?:us|Us)\b", " ", text or ""))
     if not _RESTRICTED_RE.search(t):
         return True
     if OPEN_WORDS.search(t):
         return True
-    return any(_fold(str(a)) and re.search(rf"\b{re.escape(_fold(str(a)))}\b", t) for a in allowed)
+    return place_hit(t, expand_places(allowed))
+
+
+_OPEN_ATS = re.compile(r"\b(?:remote|home based|homebased|home office|anywhere|worldwide|global|globally|distributed|"
+                       r"fully remote|work from home|wfh)\b")
 
 
 def ats_location_ok(job, allowed: list) -> bool:
-    """ATS konum alanı çoğunlukla ofis yeridir. Kısıtlayıcı bölge + ("remote" yazıyor ya da ilan remote
-    beyan etmiyor) → aday o bölgede olmalı, ele. Remote beyanlı ve konum yalnızca bir ülke ise (merkez ofis
-    olabilir) karar scan skill'inde."""
-    if region_ok(job.location, allowed):
+    """ATS konum alanı çoğunlukla ofis yeridir. İlan ancak izinli bir yeri (ya da onu kapsayan bölgeyi) anıyorsa ya da
+    yalnızca açık bir ifadeyse ("Remote", "Home based – Worldwide") geçer. "Remote – Washington D.C.", "Seattle; Remote",
+    "Lyon, France" → izinli yer yok, ele. Kısıtlayıcı listeye tek tek şehir yazmak yerine izinli yerlerin varlığına bakılır.
+    İstisna: ilan remote beyanlı ve konum "remote" demeden yalnızca bir yer adıysa (merkez ofis olabilir) karar skill'de."""
+    if not allowed:
         return True
-    return job.workplace == "remote" and "remote" not in _fold(job.location)
+    loc = _fold(job.location)
+    if not loc or loc in ("n a", "na", "tbd"):
+        return True
+    if place_hit(loc, expand_places(allowed)):
+        return True
+    rest = re.sub(r"\s+", " ", _OPEN_ATS.sub(" ", loc)).strip()
+    if _OPEN_ATS.search(loc) and not rest:
+        return True
+    return job.workplace == "remote" and not _OPEN_ATS.search(loc)
 
 
 # Dil uzmanlığı ilanları ("Dutch Audio Specialist", "Kazakh Language Specialist"):
@@ -155,6 +165,12 @@ LANGS = {
     "kinyarwanda": "rw", "fulah": "ff", "wolof": "wo", "kazakh": "kk", "uzbek": "uz", "tajik": "tg",
     "kyrgyz": "ky", "azerbaijani": "az", "azeri": "az", "georgian": "ka", "armenian": "hy", "mongolian": "mn",
     "maori": "mi", "samoan": "sm", "hawaiian": "haw", "kabuverdianu": "kea", "haitian creole": "ht",
+    "maltese": "mt", "luxembourgish": "lb", "faroese": "fo", "breton": "br", "corsican": "co", "occitan": "oc",
+    "sardinian": "sc", "yiddish": "yi", "kurdish": "ku", "pashto": "ps", "sindhi": "sd", "odia": "or", "oriya": "or",
+    "assamese": "as", "khmer": "km", "lao": "lo", "burmese": "my", "tigrinya": "ti", "shona": "sn", "sesotho": "st",
+    "tswana": "tn", "twi": "tw", "lingala": "ln", "chichewa": "ny", "malagasy": "mg", "quechua": "qu",
+    "guarani": "gn", "tatar": "tt", "uyghur": "ug", "tibetan": "bo", "javanese": "jv", "sundanese": "su",
+    "cebuano": "ceb", "ilocano": "ilo", "hmong": "hmn", "umbundu": "umb", "kikuyu": "ki", "luganda": "lg",
 }
 _LANG_RE = re.compile(r"\b(" + "|".join(sorted(LANGS, key=len, reverse=True)) + r")\b")
 _LANG_ROLE = re.compile(r"\b(?:language|linguist|linguistic|speaker|speaking|native|fluent|bilingual|audio|voice|"
@@ -205,8 +221,18 @@ def cmd_run(a) -> int:
         return 1
     src_cfg = config.load_sources(VAULT)
     max_age = a.max_age if a.max_age is not None else src_cfg.get("max_age_days", 14)
+    # "akışlar" (varsayılan): yaş filtresi yalnızca akış sitelerine; şirket kariyer sayfalarındaki ilanlar aylarca açık kalır.
+    # "hepsi": kariyer sayfaları da filtrelenir (kişi yalnızca yeni açılan ya da yeniden yayımlanan ilanları görmek isterse).
+    age_scope = str(src_cfg.get("max_age_kapsam") or "akışlar")
 
     wanted = {s for w in workers for s in w["kaynaklar"]}
+    if a.kaynak:   # yeniden tarama: yalnızca verilen kaynak(lar); görülenler yine atlanır, sonuç bugünün dosyasına eklenir
+        only = {s.strip() for s in a.kaynak.split(",") if s.strip()}
+        unknown = only - set(ALL)
+        if unknown:
+            print(f"Bilinmeyen kaynak: {', '.join(sorted(unknown))}. Geçerli: {', '.join(sorted(ALL))}")
+            return 1
+        wanted &= only
     queries = sorted({r for w in workers for r in w["roller"]})
     if not queries:
         print("Uyarı: aktif worker'larda `roller` boş; başlık ön-elemesi yapılamaz. Worker'a rol ekleyin.")
@@ -214,15 +240,21 @@ def cmd_run(a) -> int:
 
     notes, stats, fetched = [], {}, []
     for s in sorted(wanted - set(ALL)):
-        notes.append(f"{s}: " + NON_SCANNABLE.get(s, "bilinmeyen kaynak, adaptörü yok."))
+        # Betiği olmayan kaynakların notu kişinin ayarında durabilir (me/sources.json → elle_kaynaklar).
+        manual = (src_cfg.get("elle_kaynaklar") or {}).get(s)
+        notes.append(f"{s}: " + (manual or NON_SCANNABLE.get(s, "bilinmeyen kaynak, adaptörü yok.")))
 
     # ATS kaynakları önce: doğrudan başvuru linki verdikleri için tekrarlarda tercih edilir
     for name in [s for s in ATS if s in wanted] + [s for s in FEEDS if s in wanted]:
         mod = ALL[name]
+        users = [w for w in workers if name in w["kaynaklar"]]
         ctx = {
             "watchlist": [w for w in src_cfg.get("watchlist", []) if w.get("ats") == name],
             "feed": (src_cfg.get("feeds") or {}).get(name) or {},
-            "queries": queries,
+            "queries": sorted({r for w in users for r in w["roller"]}) or queries,
+            # Kaynak destekliyorsa aramayı adayın ülkesine daraltır (ör. Himalayas `country`).
+            "countries": list(dict.fromkeys(str(c) for w in users for c in (w.get("ülkeler") or []))),
+            "uyarılar": [],   # kaynak kısmi okuduysa buraya yazar; özette ve meta'da görünür
         }
         if name in ATS and not ctx["watchlist"]:
             notes.append(f"{name}: takip listesinde bu ATS'yi kullanan şirket yok (detect --add ile eklenir).")
@@ -237,21 +269,35 @@ def cmd_run(a) -> int:
             fetched += jobs
         except Exception as e:  # bir kaynağın hatası taramayı durdurmaz
             stats[name] = {"hata": f"{type(e).__name__}: {e}"[:200]}
+        for w in ctx["uyarılar"]:
+            # Kısmi okuma sessiz kalmamalı: "Yeni ilan: 0" ile "kaynak yarıda kesildi" ayırt edilebilmeli.
+            stats.setdefault(name, {})["uyarı"] = "; ".join(ctx["uyarılar"])[:300]
+            notes.append(f"{name}: {w}")
+
+    # Kişinin kesin kuralları, sınıflandırmaya gelmeden: kara listedeki şirket ve aranmayan dilde yazılmış ilan.
+    # Bunlar eskiden elle eleniyordu; sayaçlar özette görünür ki "az ilan" ile "çok eleme" ayırt edilsin.
+    blocked = ((config.read_frontmatter(VAULT / "me" / "profile" / "preferences.md").get("kara_liste") or {})
+               .get("şirketler") or []) if (VAULT / "me" / "profile" / "preferences.md").exists() else []
 
     # yaş + worker eşleşmesi
     kept = []
     for j in fetched:
-        ad = age_days(j.published)
-        # Yaş filtresi yalnızca akış kaynaklarına uygulanır. Şirket kariyer sayfalarındaki (ATS) ilanlar
-        # aylarca açık kalır; panoda duruyorsa ilan açıktır.
-        if j.source in FEEDS and max_age and ad is not None and ad > max_age:
+        ad = fresh_age(j)
+        if company_blocked(j.company, blocked):
+            stats.setdefault(j.source, {})["kara_liste"] = stats.get(j.source, {}).get("kara_liste", 0) + 1
+            continue
+        lang = None   # yalnızca rolle eşleşen ilan için hesaplanır
+        # Yaş = yayın ya da yeniden yayım/güncellemeden yeni olanı. Varsayılan olarak yalnızca akış kaynaklarına uygulanır;
+        # `max_age_kapsam: hepsi` ile kariyer sayfalarına da.
+        if (j.source in FEEDS or age_scope == "hepsi") and max_age and ad is not None and ad > max_age:
+            stats.setdefault(j.source, {})["eski"] = stats.get(j.source, {}).get("eski", 0) + 1
             continue
         for w in workers:
             if j.source not in w["kaynaklar"]:
                 continue
             if any(excluded(j.title, x) for x in w["hariç_başlık"]):
                 continue
-            if not workplace_ok(j.workplace, w.get("yer") or []):
+            if not workplace_ok(j.workplace, w.get("yer") or []) and not partial_remote_ok(j, w.get("kısmi_remote")):
                 continue
             allowed = w.get("ülkeler") or []
             if not location_ok(j, allowed):
@@ -267,10 +313,17 @@ def cmd_run(a) -> int:
             if j.source in ATS:
                 hits += [f"kök:{k}" for k in w.get("şirket_kökleri") or [] if role_matches(j.title, k)]
             if hits:
+                want = [str(x).lower() for x in (w.get("ilan_dilleri") or [])]
+                if want:
+                    lang = posting_language(j.description) if lang is None else lang
+                    if lang and lang not in want:
+                        continue
                 j.workers.append(w["ad"])
                 j.matched += [h for h in hits if h not in j.matched]
         if j.workers:
             kept.append(j)
+        elif lang:   # bir rolle eşleşti ama hiçbir worker bu dilde ilan aramıyor
+            stats.setdefault(j.source, {})["dil_dışı"] = stats.get(j.source, {}).get("dil_dışı", 0) + 1
 
     # tekrar birleştirme
     by_key: dict[str, object] = {}
@@ -299,9 +352,15 @@ def cmd_run(a) -> int:
         stats[j.source]["eşleşen"] += 1
 
     out_p = _scans_dir() / f"{today}.json"
-    existing = _load_json(out_p, {"jobs": []})
+    existing = _load_json(out_p, {"jobs": []})   # meta.elle_okumalar aşağıda korunur
     have = {x["id"] for x in existing["jobs"]}
     jobs_out = existing["jobs"] + [j.to_dict() | {"key": k} for k, j in new.items() if j.id not in have]
+    # Aynı gün birden çok çalıştırma (ör. `--kaynak himalayas` ile yeniden deneme) önceki özeti silmemeli:
+    # kaynak istatistikleri kaynak bazında güncellenir, notlar birleştirilir.
+    old_meta = existing.get("meta") or {}
+    all_stats = dict(old_meta.get("kaynaklar") or {})
+    all_stats.update(stats)
+    all_notes = list(dict.fromkeys(list(old_meta.get("notlar") or []) + notes))
     result = {
         "meta": {
             "tarih": today,
@@ -309,8 +368,10 @@ def cmd_run(a) -> int:
             "aktif_worker": [w["ad"] for w in workers],
             "roller": queries,
             "max_age_days": max_age,
-            "kaynaklar": stats,
-            "notlar": notes,
+            "max_age_kapsam": age_scope,
+            "kaynaklar": all_stats,
+            "notlar": all_notes,
+            "elle_okumalar": old_meta.get("elle_okumalar") or [],
             "toplam_ilan": len(jobs_out),
         },
         "jobs": jobs_out,
@@ -330,7 +391,7 @@ def cmd_run(a) -> int:
     print(f"Yeni ilan: {len(new)}" + (" (dry-run, kaydedilmedi)" if a.dry_run else f" → {out_p.relative_to(VAULT)}"))
     pos = {x["id"]: i for i, x in enumerate(jobs_out, 1)}
     for j in new.values():
-        i, ad = pos.get(j.id, 0), age_days(j.published)
+        i, ad = pos.get(j.id, 0), fresh_age(j)
         print(f"  {i:3}. [{','.join(j.workers)}] {j.company} — {j.title} · {j.workplace or '?'} · {j.location[:40] or '?'}"
               f" · {j.source}{' +' + str(len(j.also_on)) if j.also_on else ''} · {'' if ad is None else f'{ad:.0f}g'}")
     return 0
@@ -500,6 +561,21 @@ def cmd_detect(a) -> int:
     return 0
 
 
+# ------------------------------------------------------------------ elle okuma kaydı
+def cmd_log(a) -> int:
+    """Tarayıcıyla / elle okunan kaynağı o günün tarama özetine yazar — ilan eklenmese bile. Panel "son tarama" tarihini buradan da okur."""
+    p = _scan_path(a.scan)
+    data = _load_json(p, {"meta": {"tarih": p.stem}, "jobs": []})
+    meta = data.setdefault("meta", {})
+    entry = {"kaynak": a.kaynak, "yöntem": a.yontem, "ilan": a.ilan, "zaman": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    if a.not_:
+        entry["not"] = a.not_
+    meta.setdefault("elle_okumalar", []).append(entry)
+    _write_json(p, data)
+    print(f"kaydedildi: {a.kaynak} · {a.yontem} · {a.ilan} ilan → {p.relative_to(VAULT)}")
+    return 0
+
+
 # ------------------------------------------------------------------ main
 def main() -> int:
     ap = argparse.ArgumentParser(description="HRVault tarayıcı")
@@ -508,6 +584,7 @@ def main() -> int:
     r.add_argument("--dry-run", action="store_true", help="dosya yazma, seen.json'u güncelleme")
     r.add_argument("--all", action="store_true", help="daha önce görülenleri de dahil et")
     r.add_argument("--max-age", type=int, default=None, help="gün; 0 = sınırsız")
+    r.add_argument("--kaynak", help="yalnızca bu kaynak(lar)ı tara, virgülle (ör. himalayas): kısmi okunan kaynağı yeniden denemek için")
     s = sub.add_parser("show", help="taranmış bir ilanı göster")
     s.add_argument("ref", help="ilan id'si (kaynak:id) veya listedeki sıra")
     s.add_argument("--scan", help="tarama tarihi (YYYY-MM-DD), varsayılan bugün")
@@ -524,9 +601,15 @@ def main() -> int:
     d = sub.add_parser("detect", help="bir şirketin ATS'sini ve token'ını bul")
     d.add_argument("url")
     d.add_argument("--add", metavar="ŞİRKET", help="bulunursa me/sources.json takip listesine ekle")
+    lg = sub.add_parser("kaydet", help="tarayıcıyla / elle okunan kaynağı bugünün özetine yaz (ilan çıkmasa da)")
+    lg.add_argument("kaynak", help="ör. indeed, stepstone, heyjobs, linkedin")
+    lg.add_argument("--yontem", default="tarayıcı", help="ör. tarayıcı, oturumlu arama, kişinin linki, alarm e-postası")
+    lg.add_argument("--ilan", type=int, default=0, help="tarama dosyasına eklenen ilan sayısı")
+    lg.add_argument("--not", dest="not_", help="kısa gözlem (ör. 'izin penceresi; kişi seçim yapmalı')")
+    lg.add_argument("--scan", help="tarih (YYYY-MM-DD), varsayılan bugün")
     a = ap.parse_args()
     return {"run": cmd_run, "show": cmd_show, "brief": cmd_brief, "annotate": cmd_annotate,
-            "detect": cmd_detect}[a.cmd](a)
+            "detect": cmd_detect, "kaydet": cmd_log}[a.cmd](a)
 
 
 if __name__ == "__main__":

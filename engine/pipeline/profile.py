@@ -147,22 +147,25 @@ def definitions(path: Path) -> list[dict]:
 GOALS_CORE = ["Hayalimdeki iş ve sektör", "Nasıl çalışmak istiyorum"]
 
 
-def check() -> dict:
-    if not ME.exists():
+def check(vault: Path | None = None) -> dict:
+    """Profilin durumu. `vault` verilmezse bu vault (panel ve testler başka bir vault'u okuyabilir)."""
+    vault = vault or VAULT
+    me = vault / "me"
+    if not me.exists():
         return {"hazır": False, "me": False, "eksikler": ["me/ yok — `profile.py init`"]}
-    workers = config.load_workers(VAULT, only_active=False)
+    workers = config.load_workers(vault, only_active=False)
     active = [w for w in workers if w["_aktif"]]
-    ans = answers(ME / "profile" / "answers.md")
-    cv = cv_status(ME / "profile" / "cv-master.md")
-    ev = evidence_status(ME / "profile" / "evidence-bank.md")
-    prefs_p = ME / "profile" / "preferences.md"
+    ans = answers(me / "profile" / "answers.md")
+    cv = cv_status(me / "profile" / "cv-master.md")
+    ev = evidence_status(me / "profile" / "evidence-bank.md")
+    prefs_p = me / "profile" / "preferences.md"
     prefs = config.read_frontmatter(prefs_p) if prefs_p.exists() else {}
 
     types = {t for w in active for t in (w.get("çalışma_tipi") or [])}
     need = ANSWERS_CORE + sorted({k for t in types for k in ANSWERS_BY_TYPE.get(t, [])})
     empty_answers = [k for k in need if not ans.get(k)]
 
-    defs = definitions(ME / "profile" / "job-definitions.md")
+    defs = definitions(me / "profile" / "job-definitions.md")
     approved = {d["id"] for d in defs if d["durum"] == "onaylandı"}
 
     worker_issues, worker_soft = [], []
@@ -191,14 +194,14 @@ def check() -> dict:
     if not active:
         eksik.append("aktif worker yok")
     eksik += [f"worker {x}" for x in worker_issues + worker_soft]
-    g = ME / "profile" / "goals.md"
+    g = me / "profile" / "goals.md"
     goals = sections(g)
     empty_goals = [h for h, b in goals.items() if not b]
     if not g.exists():
         eksik.append("goals.md yok — `profile.py init`")
     elif empty_goals:
         eksik.append(f"goals: boş — {', '.join(empty_goals)}")
-    analysis = sections(ME / "profile" / "career-analysis.md")
+    analysis = sections(me / "profile" / "career-analysis.md")
     analysis_done = bool(analysis.get("Profil özeti"))
     if not analysis_done:
         eksik.append("kariyer analizi yapılmadı (career-analysis.md)")
@@ -216,7 +219,7 @@ def check() -> dict:
     paused_defs = sorted((approved & linked) - linked_active)
     if no_worker:
         eksik.append(f"worker'ı olmayan onaylı tanım: {', '.join(no_worker)}")
-    if not (ME / "sources.json").exists():
+    if not (me / "sources.json").exists():
         eksik.append("sources.json yok — `profile.py init`")
     # İlan dili: arayüz dili Türkçe olsa da aranan ilanların dili ayrı bir karardır; kişiye sorulur.
     job_langs = (prefs.get("worker_varsayılanları") or {}).get("ilan_dilleri") or []

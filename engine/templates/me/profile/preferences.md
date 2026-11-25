@@ -19,6 +19,10 @@ worker_varsayılanları:
   ilan_dilleri: []                 # hangi dillerde yazılmış ilanlar aransın, ör. [en, tr]; coach sorar, boşken tarama başlamaz
   günlük_limit: 5
   ortak_hariç_başlık: []
+  kısmi_remote:                 # isteğe bağlı istisna: yer [remote] iken kısmen yerinde çalışmayı kabul et
+    tipler: []                  # ör. [freelance]
+    min_remote_yüzde:           # ör. 80
+    şehirler: []                # yerinde kısmın kabul edildiği şehirler
 
 # Onay ve bildirim
 onay_kanalı: markdown              # markdown | slack | notion | email

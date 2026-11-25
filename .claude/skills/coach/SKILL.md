@@ -135,3 +135,7 @@ değişiklik öner. Değişiklik yine kişinin onayıyla yapılır; worker'lar b
 ## Sonradan güncelleme
 Kişi yeni deneyim, sertifika, proje ya da tercih söylediğinde ilgili `me/profile/` dosyasını güncelle,
 etkilenen tanım varsa söyle, `check` çalıştır.
+
+## Panel
+Her aşama bittiğinde paneli yenile: `python3 engine/pipeline/dashboard.py` (ilk seferde `--open`). Panelin üstündeki
+kurulum kartı aşamayı, eksikleri ve sıradaki adımı gösterir; kişi ilerlemesini oradan izler. me/ kurulmadan panel üretilmez.
