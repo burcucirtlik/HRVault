@@ -25,7 +25,7 @@ Kontrol: `python3 engine/pipeline/profile.py doctor`
 
 ## Kurulum akışı (koç)
 
-1. Bu klasörü Claude Code'da aç ve `/coach` yaz. (Başka bir şey yazsan da Claude seni buraya yönlendirir.)
+1. Bu klasörü Claude Code'da aç ve `/başla` yaz (ortam kontrolü + `coach`; doğrudan `/coach` da olur). Başka bir şey yazsan da Claude seni buraya yönlendirir.
    İlerlemeni panelde izle: `python3 engine/pipeline/dashboard.py --open`. Panel tarayıcında açılır; en üstteki kurulum
    kartı hangi aşamada olduğunu ve sıradaki adımı gösterir, her adımla dolar.
 2. **Tanışma** — koç LinkedIn profil linkini ister ve profilini ayrıntılı okur (CV gerekmez). Sonra konuşursunuz:

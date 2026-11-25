@@ -482,7 +482,7 @@ class DashboardFreshInstall(unittest.TestCase):
             (v / "engine" / "VERSION").write_text("0.0.0", encoding="utf-8")
             page = dashboard.render(dashboard.collect(v))
         self.assertIn("Kurulum — 1 · Tanışma", page)
-        self.assertIn("/coach", page)
+        self.assertIn("/başla", page)
         self.assertIn("Henüz tarama yok", page)
         self.assertNotIn("Elenenler ve eşik altı", page)
 

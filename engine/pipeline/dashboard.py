@@ -433,7 +433,7 @@ def setup_card(k: dict) -> str:
     """Kurulum ilerlemesi: aşamalar, eksikler ve sıradaki adım. Kurulum tamamsa tek satıra iner."""
     if not k.get("me", True):
         return ('<section id="kurulum" class="setup"><h2>Kurulum</h2><p class="sub">Bu vault henüz bir kişi için kurulmadı.</p>'
-                '<p><b>Sıradaki adım:</b> Claude Code\'da <code>/coach</code> yaz. Kariyer koçu profilini kurar; panel her adımda dolar.</p></section>')
+                '<p><b>Sıradaki adım:</b> Claude\'da <code>/başla</code> yaz. Claude sana soruları tek tek sorar; panel her adımda dolar.</p></section>')
     stage = k.get("aşama", "")
     done_n = len(STAGES) if stage == "tamam" else (STAGES.index(stage) if stage in STAGES else 0)
     steps = "".join(
@@ -445,8 +445,8 @@ def setup_card(k: dict) -> str:
                 + "".join(f"<li>{e(x)}</li>" for x in eksik) + "</ul></div></details>") if eksik else ""
         return f'<section id="kurulum" class="setup compact"><ol class="steps">{steps}</ol>{more}</section>'
     ready = k.get("hazır")
-    nxt = ("Profil taramaya hazır; kalan aşamaları uygun bir anda tamamla. Tarama için <code>/scan</code>."
-           if ready else "Claude Code'da <code>/coach</code> yaz; kaldığın yerden devam eder. Profil hazır olunca tarama açılır.")
+    nxt = ("Profil taramaya hazır; kalan aşamaları uygun bir anda tamamla. İlanlar için <code>/tara</code> yaz."
+           if ready else "Claude'da <code>/başla</code> yaz; kaldığın yerden devam eder. Kurulum bitince <code>/tara</code> ile ilanlara bakılır.")
     return (f'<section id="kurulum" class="setup"><h2>Kurulum — {e(stage)}</h2>'
             f'<p class="sub">{e(STAGE_HINT.get(stage, ""))}</p><ol class="steps">{steps}</ol>'
             f'<p><b>Sıradaki adım:</b> {nxt}</p>'
@@ -629,7 +629,7 @@ def main() -> int:
         sys.exit("Panel kişisel veri içerir; yalnızca me/ altına yazılır.")
     if not (VAULT / "me").exists():
         # Panel me/'yi kendisi kurmaz: kurulum coach'un işi (profile.py init). Kişiye yolu göster.
-        print("me/ yok: bu vault henüz kurulmadı. Claude Code'da /coach yaz (ya da `python3 engine/pipeline/profile.py init`),\n"
+        print("me/ yok: bu vault henüz kurulmadı. Claude'da /başla yaz (ya da `python3 engine/pipeline/profile.py init`),\n"
               "sonra paneli yeniden üret. Panel kurulumun her adımında dolar.")
         return 1
     out.write_text(render(collect(VAULT)), encoding="utf-8")

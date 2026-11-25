@@ -6,7 +6,24 @@ Bu vault bir iş arama ve başvuru motorudur. Tam tasarım: `DESIGN.md`.
 
 Her oturumun başında `python3 engine/pipeline/profile.py gate` çıktısına bak (SessionStart hook'u bağlama ekler;
 yoksa kendin çalıştır). `me/` yoksa ya da profil `HAZIR DEĞİL` ise kişi ne isterse istesin önce durumu söyle ve
-`/coach` ile kaldığı yerden devam etmeyi öner. Profil hazır değilken `scan`, `score`, `apply` çalışmaz.
+`/başla` ile kaldığı yerden devam etmeyi öner. Profil hazır değilken `scan`, `score`, `apply` çalışmaz.
+
+## İlk kurulum ve kolay komutlar
+
+Bu vault'u kuranların çoğu teknik değildir: komut yazdırma, dosya açtırma; soruları **tek tek** sor.
+Kişinin bildiği komutlar altı tanedir: `/başla` (kurulum, kaldığı yerden devam) → `/tara` (tara + puanla + listeyi göster)
+→ `/başvur` (CV hazırla + onayla başvur) · `/durum` · `/panel` · `/yardım`.
+
+- **Depo bu oturumda klonlandıysa** komutlar menüde henüz görünmeyebilir. Klonlama bitince kişiye yalnızca şunu söyle:
+  "Hazır. Şimdi `/başla` yaz." Kişi `/başla` ya da düz yazıyla "başla" derse ve komut tanınmadıysa
+  `.claude/skills/basla/SKILL.md` dosyasını oku ve uygula; kişiyi yeni oturum açmaya zorlama.
+  Aynısı diğer komutlar için de geçerli: `.claude/skills/<tara|basvur|durum|panel|yardim>/SKILL.md`.
+- Depo çalışma klasörünün **alt klasörüne** klonlandıysa komutlar ve oturum başı kontrolü yüklenmez: kişiye o alt
+  klasörü proje klasörü olarak açmasını söyle.
+- Klasör adları düz harflidir (`basla`, `basvur`, `yardim`); `/basla` yazan da aynı komutu çalıştırır.
+- Kişi Türkçe yazmıyorsa onun dilinde konuş; komut adları aynı kalır.
+- **"HRVault'u güncelle"** denirse: `git pull --ff-only` (depo klonlanmışsa), sonra `python3 engine/pipeline/profile.py init`
+  (eksik şablonları ekler; `me/`'deki dosyalara dokunmaz) ve `profile.py check`. Yerel değişiklik çakışırsa zorlama; kişiye söyle.
 
 ## Katman sınırı (en önemli kural)
 
@@ -57,5 +74,10 @@ Bir şey öğrendiğinde sor: "Bu, vault'u kullanan herkes için doğru mu?"
 
 ## Skill'ler
 
-`.claude/skills/` altında: `coach` (kariyer koçu, giriş noktası), `mode`, `scan`, `score`, `tailor`, `apply`,
-`track`, `learn`, `export`. Durumları için her SKILL.md'nin başına bak.
+`.claude/skills/` altında iki katman var:
+- **Kolay komutlar** (kişinin yazdığı): `basla`, `tara`, `basvur`, `durum`, `panel`, `yardim`. Bunlar ince sarmalayıcıdır;
+  işi aşağıdaki skill'lere yaptırır.
+- **Asıl skill'ler:** `coach` (kariyer koçu), `mode`, `scan`, `score`,
+  `tailor`, `apply`, `track`, `learn`, `export`.
+
+Durumları için her SKILL.md'nin başına bak.

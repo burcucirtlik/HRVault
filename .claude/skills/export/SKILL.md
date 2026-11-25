@@ -42,7 +42,7 @@ bölgesel adaptörleri de paylaşmak isterse manifestte `bölgesel_adaptörler: 
    `export.py build --reviewed --update <depo-klasörü>` ile yazılır (`.git` korunur, diğer her şey yeni paketle değişir),
    commit'ten önce `git diff --stat` kişiye gösterilir. Commit kimliği olarak kişinin iş e-postası değil GitHub'ın
    no-reply adresi önerilir (`git config user.email` yalnızca o depoda). Depoyu herkese açmak kişinin açık kararıdır.
-   Alıcı `README.md`'yi okur ve `/coach` ile başlar.
+   Alıcı `README.md`'yi okur ve `/başla` ile başlar.
 
 ## Yalnızca öğrenimler (kaynağa geri dönüş)
 `python3 engine/pipeline/export.py build --knowledge-only` (prova), sonra `--reviewed`.

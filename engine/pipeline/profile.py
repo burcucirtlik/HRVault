@@ -303,10 +303,10 @@ def cmd_gate(_a) -> int:
         r = check()
         if not r.get("me", True):
             msg = ("me/ yok: bu vault henüz bir kişi için kurulmadı. Kişi ne isterse istesin önce bunu söyle ve "
-                   "/coach ile kuruluma başlamayı öner (`profile.py init`, `profile.py doctor`).")
+                   "kuruluma başlamak için `/başla` yazmasını öner (başla skill'i: `profile.py init`, `profile.py doctor`, coach).")
         elif not r["hazır"]:
             msg = (f"profil HAZIR DEĞİL · coach aşaması: {r['aşama']}. scan / score / apply çalıştırma; önce durumu "
-                   "söyle ve /coach ile kaldığı yerden devam etmeyi öner.")
+                   "söyle ve `/başla` ile kaldığı yerden devam etmeyi öner.")
         elif r["aşama"] != "tamam":
             msg = f"profil hazır · coach aşaması: {r['aşama']} (eksik: {'; '.join(r['eksikler'][:3])}). Uygun bir anda tamamlamayı öner."
         else:
@@ -339,7 +339,7 @@ def cmd_doctor(a) -> int:
     except OSError:
         rows.append((False, "Vault'a yazma izni", "yok; profil ve başvuru kayıtları yazılamaz"))
     if (VAULT / ".git").exists():
-        ign = subprocess.run(["git", "-C", str(VAULT), "check-ignore", "-q", "me"], capture_output=True).returncode == 0
+        ign = subprocess.run(["git", "-C", str(VAULT), "check-ignore", "-q", "--no-index", "me"], capture_output=True).returncode == 0
         rows.append((ign, "me/ git'te yok sayılıyor", "" if ign else "`.gitignore`'a `/me/` ekle; kişisel veri commit'lenebilir"))
         hook = (VAULT / ".git" / "hooks" / "pre-commit").exists()
         rows.append((hook or None, "Commit öncesi sızıntı taraması", "" if hook else "kurulu değil — `python3 engine/pipeline/export.py install-hook`"))
@@ -354,8 +354,9 @@ def cmd_doctor(a) -> int:
             rows.append((True, "Ağ erişimi (ilan akışı)", ""))
         except Exception as e:  # noqa: BLE001
             rows.append((None, "Ağ erişimi (ilan akışı)", f"istek başarısız ({type(e).__name__}); tarama çalışmayabilir"))
-    rows.append((None, "Tarayıcı eklentisi (Claude in Chrome)", "betikle denetlenemez; LinkedIn profilini okumak ve form doldurmak "
-                 "için gerekir. Yoksa LinkedIn 'Save to PDF' çıktısı kullanılır"))
+    rows.append((None, "Tarayıcı (Claude uygulamasının kendi tarayıcısı ya da Claude in Chrome)",
+                 "betikle denetlenemez; LinkedIn profilini okumak ve form doldurmak için gerekir. "
+                 "Yoksa LinkedIn 'Save to PDF' çıktısı ya da CV dosyası kullanılır"))
     mark = {True: "✓", False: "✗", None: "!"}
     print(f"HRVault {engine_version()} — ortam kontrolü")
     for ok, name, note in rows:
