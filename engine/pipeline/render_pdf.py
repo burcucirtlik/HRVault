@@ -33,6 +33,13 @@ CHROME_CANDIDATES = [
     "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
     "google-chrome", "google-chrome-stable", "chromium", "chromium-browser",
 ]
+# Windows: Chrome ve Edge'in olağan kurulum yerleri (ortam değişkenleri yalnızca Windows'ta tanımlı).
+for _env in ("PROGRAMFILES", "PROGRAMFILES(X86)", "LOCALAPPDATA"):
+    _base = os.environ.get(_env)
+    if _base:
+        CHROME_CANDIDATES += [os.path.join(_base, "Google", "Chrome", "Application", "chrome.exe"),
+                              os.path.join(_base, "Microsoft", "Edge", "Application", "msedge.exe")]
+CHROME_CANDIDATES += ["chrome", "msedge"]
 
 # ATS dostu: tek sütun, tablo/ikon yok, iletişim bilgisi gövdede, sistem yazı tipi.
 CSS = """

@@ -15,7 +15,8 @@
   ".gitignore": "b99d7019f13286fc57f3f868922423668dfaacf9ca28120c9f7b31cef88bb8e4",
   "CLAUDE.md": "02e3c814d83e3e4eb07964c7a8ed624f5839a4c6ef178e42ab24b55adcfb7c57",
   "DESIGN.md": "79e8cae92ec78dc403b47ab968b580f4878237434594e96fd8e49ea302162ec5",
-  "README.md": "56fc7c9231416535a94a1372fa9ad682594bbef044e885b50dc3eb7dea6468be",
+  "README.md": "1f9d31c084bbf50ec677d1d6f12d3fd3146159bfeb21a5ae97d1f6f908451c15",
+  "TEKNIK.md": "68898b270e34c0a1add01b05edc733e2774834c5841d2df4f7b446fbb009182f",
   "engine/VERSION": "1f930dd1f133c1f97a94fe3acb8db34372cf4c01ffdb2b3ff4ca72f9494121e9",
   "engine/adapters/README.md": "14843ab196aee934dbbb83e85c69cc5880e17d15389020bc05499fce1fa501de",
   "engine/adapters/ashby.md": "353f92257f2d79b63c0c2e53525b7a3000e2c674229c6c864e02ec751902a9b4",
@@ -27,7 +28,7 @@
   "engine/adapters/remotive.md": "4a6428bc9e65dcb20362f4ca46d12d6c077e2bbcb334f568291a121e0e905429",
   "engine/adapters/weworkremotely.md": "c21dd7a8b482051076792f181e9dc1f059325e1eafc9faea267fb97878856585",
   "engine/export/countries.json": "5b653e1cea1ebc2fd31ad7b76523b0e1bce56505913357f221b35e8150fb8539",
-  "engine/export/manifest.json": "ab0311a88b15f92cd8569d8b422d3d3cfa52212090c452e71596bbaf3857e88e",
+  "engine/export/manifest.json": "ab78c4138cb5d9f5377b2525384966c329d5fb2dcecdaf3e87d2acc465f45288",
   "engine/export/pre-commit": "45838616eebe695a2b8dafbae66fe8e53815bb68aebf41143a5d0ca8ea8c0d6a",
   "engine/pipeline/ats.py": "841aff19fe3ba5d6fcf8c4e18e94ffa575e166fed10162b647c992139cdabc99",
   "engine/pipeline/backup.py": "263a1a2f15f70d75dced7bd46bb1f4ced93702039697aa705638a23408354899",
@@ -37,7 +38,7 @@
   "engine/pipeline/learn.py": "73dbc3ed9c6832b8f22b5971d82612a8cfe81b7a524e1f69ef63fed403f6de4e",
   "engine/pipeline/profile.py": "0bb9fc57879ac8cc2bd4518e64032ea852a2ee755046b8e29132e81a7670f339",
   "engine/pipeline/records.py": "a19f9404890e2ea3d19d8fa2c0275ab0822c1726ed350dc671f743b3658c2c25",
-  "engine/pipeline/render_pdf.py": "8751390bf02beaa2c6ce756180511fa68b11a7e768929c1911a4ebec0487e92d",
+  "engine/pipeline/render_pdf.py": "2f758d8bad3c5e421ca702181af28335511463f5774f00718934163f1668ea24",
   "engine/pipeline/track.py": "899093b4ca785844c854ce9be127e7afedc06c92e8cda945ff303cebbacc4a12",
   "engine/scanner/__init__.py": "24a981e7d2624bfbd82b22e2e69f3ea0af4dc86a2c78e9d322404b6edbf72c0a",
   "engine/scanner/common.py": "523ffa6ca66e1089b1743233014cf19d6591c3fce99a5b45cd0b50555c76a5d1",
@@ -104,7 +105,7 @@
   "me/workers/README.md": "068dc64d304987a1371286c1535aecfcb3ef4367508db1300b33ccb53b99e139"
  },
  "tarama": {
-  "dosya": 86,
+  "dosya": 87,
   "engel": 0,
   "gözden_geçir": 0,
   "izinli": 3
